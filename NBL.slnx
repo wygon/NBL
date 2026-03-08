@@ -2,5 +2,5 @@
   <Project Path="Application/Application.csproj" />
   <Project Path="Core/Core.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />
-  <Project Path="WebUI/WebUI.csproj" />
+  <Project Path="Web.Api/Web.Api.csproj" Id="6cf4c7de-5933-46f9-8882-117876e4fc67" />
 </Solution>
