@@ -1,4 +1,4 @@
-﻿namespace Core.Enums
+﻿namespace Domain.Enums
 {
     public enum NailService
     {
@@ -9,6 +9,7 @@
         UzupelnienieZelowe = 5,
         Pedicure = 6,
         PedicureFrezarkowy = 7,
-        SciaganieHybrydyZelu = 8
+        SciaganieHybrydyZelu = 8,
+        ClassicManicure = 9
     }
 }

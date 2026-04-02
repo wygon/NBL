@@ -1,9 +1,9 @@
-﻿using Core.Models;
-using MediatR;
+﻿using Domain.Common;
+using Domain.Entities;
 
-namespace Core.Events
+namespace Domain.Events
 {
-    public class AppointmentConfirmedEvent(Appointment appointment) : INotification
+    public class AppointmentConfirmedEvent(Appointment appointment) : BaseEvent
     {
         public Appointment Appointment { get; } = appointment;
     }

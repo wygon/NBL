@@ -1,6 +1,19 @@
 <Solution>
+  <Folder Name="/ClientApp/">
+    <File Path="ClientApp/.gitignore" />
+    <File Path="ClientApp/app.json" />
+    <File Path="ClientApp/eslint.config.js" />
+    <File Path="ClientApp/expo-env.d.ts" />
+    <File Path="ClientApp/package-lock.json" />
+    <File Path="ClientApp/package.json" />
+    <File Path="ClientApp/README.md" />
+    <File Path="ClientApp/tsconfig.json" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
   <Project Path="Application/Application.csproj" />
-  <Project Path="Core/Core.csproj" />
+  <Project Path="Core/Domain.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />
-  <Project Path="Web.Api/Web.Api.csproj" Id="6cf4c7de-5933-46f9-8882-117876e4fc67" />
+  <Project Path="Web.Api/Web.Api.csproj" />
 </Solution>

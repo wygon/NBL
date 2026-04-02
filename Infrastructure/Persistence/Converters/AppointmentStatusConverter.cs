@@ -1,4 +1,4 @@
-﻿using Core.Models.Statuses;
+﻿using Domain.Entities.Statuses;
 using Infrastructure.Persistence.Factories;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

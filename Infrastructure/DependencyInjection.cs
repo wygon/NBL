@@ -1,4 +1,6 @@
-﻿using Infrastructure.Database;
+﻿using Domain.Interfaces.Repositories;
+using Infrastructure.Database;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,9 @@ namespace Infrastructure
                 options.UseNpgsql(config.GetConnectionString("PostgresConnection"))
                 .UseSnakeCaseNamingConvention();
             });
+
+            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
             return services;
         }
     }

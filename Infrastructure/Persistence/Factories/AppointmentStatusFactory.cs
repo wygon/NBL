@@ -1,4 +1,4 @@
-﻿using Core.Models.Statuses;
+﻿using Domain.Entities.Statuses;
 
 namespace Infrastructure.Persistence.Factories
 {

@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using static Infrastructure.DependencyInjection;
+using Application.Common.Interfaces;
 using AspNet.Security.OAuth.Instagram;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Web.Api.Services;
+using static Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,16 +24,23 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = InstagramAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie() // Instagram potrzebuje ciasteczka, by "pamiętać" stan logowania
-.AddInstagram(options => {
+.AddInstagram(options =>
+{
     options.ClientId = builder.Configuration["Instagram:ClientId"];
     options.ClientSecret = builder.Configuration["Instagram:ClientSecret"];
     options.SaveTokens = true; // Zapisze AccessToken Instagrama w Claimsach
 });
+
+builder.Services.AddProblemDetails();
+
+builder.Services.AddHttpContextAccessor(); //wymagane aby zapisywac dane o uzytkowniku
+builder.Services.AddScoped<IUser, CurrentUser>();
 
 var app = builder.Build();
 

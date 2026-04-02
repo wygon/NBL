@@ -1,20 +1,18 @@
-﻿using Application.Common.Interfaces;
-using Core.DTOs;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿//using Application.Common.Interfaces;
+//using Domain.DTOs;
+//using MediatR;
 
-namespace Application.Features.Visits.Queries
-{
-    public class GetUserVisits : IRequest<List<VisitDto>>
-    {
-        public int UserID { get; }
-    }
+//namespace Application.Features.Visits.Queries
+//{
+//    public class GetUserVisits : IRequest<List<VisitDto>>
+//    {
+//        public int UserID { get; }
+//    }
 
-    public class GetUserVisitsHandler(IAppDbContext context) : IRequestHandler<GetUserVisits, List<VisitDto>>
-    {
-        private readonly IAppDbContext _context = context;
-        public async Task<List<VisitDto>> Handle(GetUserVisits request, CancellationToken cancellationToken)
-        {
-        }
-    }
-}
+//    public class GetUserVisitsHandler : IRequestHandler<GetUserVisits, List<VisitDto>>
+//    {
+//        public async Task<List<VisitDto>> Handle(GetUserVisits request, CancellationToken cancellationToken)
+//        {
+//        }
+//    }
+//}
