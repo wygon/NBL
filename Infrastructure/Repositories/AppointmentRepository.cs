@@ -1,6 +1,8 @@
-﻿using Domain.Entities;
+﻿using Domain.Common.Filters;
+using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -13,25 +15,45 @@ namespace Infrastructure.Repositories
             await _context.Appointments.AddAsync(appointment);
         }
 
-        public Task<List<Appointment>> GetWaitingAppointments(int userId)
+        public void DeleteAppointment(Appointment appointment, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            _context.Appointments.Remove(appointment);
+        }
+
+        public async Task<Appointment?> GetAppointment(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Appointments
+                .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+        }
+
+        public async Task<(List<Appointment> Appointments, int TotalCount)> GetAppointmentsAsync(AppointmentFilter filters, CancellationToken cancellationToken = default)
+        {
+            IQueryable<Appointment> query = _context.Appointments;
+
+            if (filters.UserId.HasValue) query = query.Where(x => x.UserId == filters.UserId);
+
+            if (filters.ArtistId.HasValue) query = query.Where(x => x.ArtistId == filters.ArtistId);
+
+            if (filters.Status != null) query = query.Where(x => x.Status == filters.Status);
+
+            if (filters.From.HasValue) query = query.Where(x => x.From >= filters.From);
+
+            if (filters.To.HasValue) query = query.Where(x => x.To <= filters.To);
+
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            List<Appointment> appointments = await query
+                .OrderByDescending(x => x.From)
+                .Skip((filters.Page - 1) * filters.Count)
+                .Take(filters.Count)
+                .ToListAsync(cancellationToken);
+
+            return (appointments, totalCount);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return await _context.SaveChangesAsync(cancellationToken);
         }
-
-        //public async Task<List<AppointmentListDTOs>> GetWaitingAppointments(int userId)
-        //    => await _context.Appointments
-        //        .Where(a => a.UserId == userId && a.Status is PendingStatus)
-        //        .Select(a => new AppointmentListDTOs()
-        //        {
-        //            Id = a.Id,
-        //            RequestedDates = a.RequestedDates,
-        //            Status = a.Status
-        //        })
-        //        .ToListAsync();
     }
 }

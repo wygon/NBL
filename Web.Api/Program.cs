@@ -1,14 +1,22 @@
+using Application;
 using Application.Common.Interfaces;
-using AspNet.Security.OAuth.Instagram;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using AutoMapper;
+using Scalar.AspNetCore;
+using Web.Api.Persistence.Extensions;
 using Web.Api.Services;
 using static Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    // To sprawi, że API będzie rozumieć "Gel" zamiast 0 w JSONie
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
 
-builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -16,31 +24,23 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebReactPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        //policy.WithOrigins("http://localhost:5173")
+        //      .AllowAnyHeader()
+        //      .AllowAnyMethod();
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = InstagramAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie() // Instagram potrzebuje ciasteczka, by "pamiętać" stan logowania
-.AddInstagram(options =>
-{
-    options.ClientId = builder.Configuration["Instagram:ClientId"];
-    options.ClientSecret = builder.Configuration["Instagram:ClientSecret"];
-    options.SaveTokens = true; // Zapisze AccessToken Instagrama w Claimsach
-});
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddProblemDetails();
 
 builder.Services.AddHttpContextAccessor(); //wymagane aby zapisywac dane o uzytkowniku
-builder.Services.AddScoped<IUser, CurrentUser>();
+builder.Services.AddScoped<IIdentityProvider, CurrentUser>(); //to wrzucic do dependencyinjection.cs
 
 var app = builder.Build();
 
@@ -48,14 +48,22 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
+
+    var mapper = app.Services.GetRequiredService<IMapper>();
+    mapper.ConfigurationProvider.AssertConfigurationIsValid();
 }
 
 app.UseHttpsRedirection();
 
 app.UseCors("WebReactPolicy");
 
+//app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+await app.InitialiseDatabaseAsync();
 
 app.Run();

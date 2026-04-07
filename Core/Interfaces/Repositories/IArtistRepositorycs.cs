@@ -4,6 +4,7 @@ namespace Domain.Interfaces.Repositories
 {
     public interface IArtistRepository
     {
-        Task<bool> IsAvailableAsync(int artistId, DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
+        Task<bool> IsArtistAvailableAsync(int artistId, DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
+        Task<bool> IsAnyAvailableAsync(DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
     }
 }

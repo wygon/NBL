@@ -8,10 +8,10 @@ namespace Infrastructure.Data.Interceptors
 {
     public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
-        private readonly IUser _user;
+        private readonly IIdentityProvider _user;
         private readonly TimeProvider _dateTime;
 
-        public AuditableEntityInterceptor(TimeProvider dateTime, IUser user)
+        public AuditableEntityInterceptor(TimeProvider dateTime, IIdentityProvider user)
         {
             _dateTime = dateTime;
             _user = user;
@@ -41,8 +41,8 @@ namespace Infrastructure.Data.Interceptors
 
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedBy = _user.Id;
-                    entry.Entity.CreatedDate = utcNow.Date;
+                    entry.Entity.CreatedBy = _user.UserId;
+                    entry.Entity.CreatedDate = utcNow.UtcDateTime;
                 }
 
                 if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
@@ -54,14 +54,14 @@ namespace Infrastructure.Data.Interceptors
                 {
                     entry.State = EntityState.Modified;
                     entry.Entity.IsDeleted = true;
-                    entry.Entity.DeletedDate = utcNow.Date;
+                    entry.Entity.DeletedDate = utcNow.UtcDateTime;
                     Modified();
                 }
 
                 void Modified()
                 {
-                    entry.Entity.ModifiedBy = _user.Id;
-                    entry.Entity.ModifiedDate = utcNow.Date;
+                    entry.Entity.ModifiedBy = _user.UserId;
+                    entry.Entity.ModifiedDate = utcNow.UtcDateTime;
                 }
             }
         }

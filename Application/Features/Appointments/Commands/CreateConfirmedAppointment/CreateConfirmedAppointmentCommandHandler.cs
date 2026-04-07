@@ -16,7 +16,7 @@ namespace Application.Features.Appointments.Commands.CreateConfirmedAppointment
 
         public async Task<CreateConfirmedAppointmentDto> Handle(CreateConfirmedAppointmentCommand request, CancellationToken cancellationToken)
         {
-            bool isAvailable = await _artistRepository.IsAvailableAsync(request.RequestedArtistId, request.DateFromTo, cancellationToken);
+            bool isAvailable = await _artistRepository.IsArtistAvailableAsync(request.RequestedArtistId, request.DateFromTo, cancellationToken);
 
             if (!isAvailable)
                 throw new Exception($"Artist is not available for the requested date: {request.DateFromTo.From} to {request.DateFromTo.To}");

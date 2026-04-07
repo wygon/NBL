@@ -2,6 +2,9 @@
 {
     public record GetAppointmentsDto
     {
-        //public List<Appointment> Id { get; init; }
+        public List<AppointmentDto> Appointments { get; init; }
+        public int TotalCount { get; init; }
+        public int Page { get; init; }
+        public int Count { get; init; }
     }
 }

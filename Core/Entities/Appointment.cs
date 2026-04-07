@@ -8,27 +8,27 @@ using Domain.Events;
 
 namespace Domain.Entities
 {
-    public sealed class Appointment : BaseEntity
+    public sealed class Appointment : BaseAuditableEntity
     {
-        public List<DateTimeFromTo> RequestedDates { get; private set; }
+        public List<DateTimeFromTo>? RequestedDates { get; init; }
         public AppointmentStatus Status { get; private set; }
-        public DateTime? From { get; private set; } = null;
-        public DateTime? To { get; private set; } = null;
-        public NailService? NailService { get; private set; }
-        public NailSize? NailSize { get; private set; }
-        public NailForm? NailForm { get; private set; }
-        public List<NailAddons> NailAddons { get; private set; }
-        public string AdditionalNotesUser { get; private set; }
-        public string AdditionalNotesArtist { get; private set; }
+        public DateTime? From { get; init; } = null;
+        public DateTime? To { get; init; } = null;
+        public NailService? NailService { get; init; }
+        public NailSize? NailSize { get; init; }
+        public NailForm? NailForm { get; init; }
+        public List<NailAddons>? NailAddons { get; init; }
+        public string? AdditionalNotesUser { get; init; }
+        public string? AdditionalNotesArtist { get; init; }
 
-        public int ArtistId { get; private set; }
-        public int UserId { get; private set; }
-        public int RecipeId { get; private set; }
+        public int ArtistId { get; init; }
+        public int UserId { get; init; }
+        public int RecipeId { get; init; }
 
         //CHECK: chat poleca sie ich pozbyc i mowi ze nie sa potrzebne dla ef core
-        //public User Artist { get; private set; }
-        //public User Customer { get; private set; }
-        //public Recipe Recipe { get; private set; }
+        //public User Artist { get; init; }
+        //public User Customer { get; init; }
+        //public Recipe Recipe { get; init; }
 
         private Appointment(int artistId, int userId, AppointmentStatus status, List<DateTimeFromTo> requestedDates,
             NailService? nailService, NailSize? nailSize, NailForm? nailForm, List<NailAddons> nailAddons, string additionalNotes, DateTime? from = null, DateTime? to = null)

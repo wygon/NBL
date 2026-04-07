@@ -18,6 +18,7 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnType("jsonb");
 
             builder.Property(e => e.NailAddons)
+                .HasConversion<NailAddonsConverter>()
                 .HasColumnType("jsonb");
 
             builder.Property(e => e.From)
@@ -27,23 +28,31 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnType("timestamp with time zone");
 
             builder.Property(e => e.NailService)
+                .HasConversion<string>()
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(e => e.NailSize)
+                .HasConversion<string>()
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder.Property(e => e.NailForm)
+                .HasConversion<string>()
+                .HasMaxLength(50)
                 .IsRequired();
 
-            builder.HasOne(e => e.Customer)
-                .WithMany(u => u.Appointments)
-                //.WithMany()
-                .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //Verify: podobno nie trzeba, bo EF Core sam wykrywa relacje na podstawie konwencji nazewnictwa i typów danych.
+            //Ale zostawiam to na razie, bo może być potrzebne do poprawnego działania.
+            //builder.HasOne(e => e.Customer)
+            //    .WithMany(u => u.Appointments)
+            //    //.WithMany()
+            //    .HasForeignKey(e => e.UserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(e => e.Recipe)
-                .WithMany()
-                .HasForeignKey(e => e.RecipeId);
+            //builder.HasOne(e => e.Recipe)
+            //    .WithMany()
+            //    .HasForeignKey(e => e.RecipeId);
         }
     }
 }

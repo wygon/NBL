@@ -19,10 +19,11 @@ namespace Infrastructure.Data.Configurations
             builder.Property(e => e.PhotoUrl)
                 .HasColumnType("text");
 
-            builder.HasMany(u => u.Appointments)
-                .WithOne(a => a.Customer)
-                .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //Verify: podobno nie trzeba, bo EF Core sam wykrywa relacje na podstawie konwencji nazewnictwa i typów danych.
+            //builder.HasMany(u => u.Appointments)
+            //    .WithOne(a => a.Customer)
+            //    .HasForeignKey(a => a.UserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasQueryFilter(u => !u.IsDeleted);
 

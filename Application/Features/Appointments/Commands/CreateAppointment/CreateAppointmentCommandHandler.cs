@@ -20,7 +20,9 @@ namespace Application.Features.Appointments.Commands.CreateAppointment
             //TODO: do poprawy w metodzie pojedynczej
             foreach (DateTimeFromTo date in request.RequestedDates)
             {
-                bool isAvailable = await _artistRepository.IsAvailableAsync(request.RequestedArtistId, date, cancellationToken);
+                bool isAvailable = request.RequestedArtistId.HasValue
+                    ? isAvailable = await _artistRepository.IsArtistAvailableAsync(request.RequestedArtistId.Value, date, cancellationToken)
+                    : isAvailable = await _artistRepository.IsAnyAvailableAsync(date, cancellationToken);
 
                 if (isAvailable == false)
                 {
@@ -29,7 +31,7 @@ namespace Application.Features.Appointments.Commands.CreateAppointment
             }
 
             Appointment appointment = Appointment.RequestAppointment(
-                request.RequestedArtistId,
+                request.RequestedArtistId!.Value,
                 request.UserId,
                 request.RequestedDates,
                 request.NailService,

@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace Web.Api.Services
 {
-    public class CurrentUser : IUser
+    public class CurrentUser : IIdentityProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -15,7 +15,7 @@ namespace Web.Api.Services
 
         //TODO: weryfikacja
         //VERIFY
-        public int? Id
+        public int UserId
         {
             get
             {
@@ -28,7 +28,9 @@ namespace Web.Api.Services
                 }
 
                 // Jeśli ktoś ma token, ale nie ma w nim ID, to coś jest grubo nie tak z konfiguracją JWT
-                throw new UnauthorizedAccessException("Brak identyfikatora użytkownika w tokenie.");
+                //throw new UnauthorizedAccessException("Brak identyfikatora użytkownika w tokenie.");
+
+                return 1;
             }
         }
 

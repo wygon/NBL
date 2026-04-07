@@ -1,5 +1,8 @@
-﻿namespace Domain.Entities.Common
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Entities.Common
 {
+    [NotMapped]
     public class DateTimeFromTo
     {
         public DateTime From { get; set; }
