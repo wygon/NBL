@@ -52,9 +52,17 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
+        {
+            GetAppointmentsDto dto = await _mediator.Send(query);
+
+            return Ok(dto);
+        }
+
         //[Authorize(Roles = "Artist")]
         [HttpGet("requested")]
-        public async Task<ActionResult<GetAppointmentsDto>> ArtistGetRequestedAppointmentsAsync([FromQuery] ArtistGetRequestedAppointmentsQuery query)
+        public async Task<ActionResult<GetAppointmentsDto>> ArtistGetRequestedAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
         {
             query.ArtistId = _identity.UserId;
 

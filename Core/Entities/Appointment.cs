@@ -64,7 +64,7 @@ namespace Domain.Entities
                 NailForm = nailForm,
                 NailAddons = nailAddons,
                 AdditionalNotesUser = additionalNotes,
-                Status = new PendingStatus()
+                Status = new RequestedStatus()
             };
 
             request.AddDomainEvent(new AppointmentCreatedEvent(request));

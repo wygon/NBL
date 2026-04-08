@@ -2,7 +2,7 @@
 
 namespace Application.Features.Appointments.Queries.GetAppointments
 {
-    public class ArtistGetRequestAppointmentsQueryValidator : AbstractValidator<ArtistGetRequestedAppointmentsQuery>
+    public class ArtistGetRequestAppointmentsQueryValidator : AbstractValidator<GetAppointmentsQuery>
     {
         public ArtistGetRequestAppointmentsQueryValidator()
         {

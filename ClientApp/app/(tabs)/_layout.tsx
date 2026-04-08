@@ -17,9 +17,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Zarezerwuj',
+          title: 'Główna',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+            <Ionicons name="home" size={size} color={color} />
+          )
+        }}
+      />
+      <Tabs.Screen
+        name="cos"
+        options={{
+          title: 'cos',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="help-circle" size={size} color={color} />
+          )
+        }}
+      />
+      <Tabs.Screen
+        name="new-appointment"
+        options={{
+          title: 'Nowa wizyta',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add-circle" size={size} color={color} />
           )
         }}
       />

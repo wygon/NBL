@@ -3,8 +3,9 @@ using MediatR;
 
 namespace Application.Features.Appointments.Queries.GetAppointments
 {
-    public class ArtistGetRequestedAppointmentsQuery : IRequest<GetAppointmentsDto>
+    public class GetAppointmentsQuery : IRequest<GetAppointmentsDto>
     {
+        public int? RequestedByUserId { get; set; } = null;
         public int? ArtistId { get; set; } = null;
         public AppointmentStatus? Status { get; init; } = null;
         public DateTime? From { get; set; }

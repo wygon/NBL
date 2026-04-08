@@ -6,20 +6,21 @@ using MediatR;
 
 namespace Application.Features.Appointments.Queries.GetAppointments
 {
-    public class ArtistGetRequestedAppointmentsQueryHandler : IRequestHandler<ArtistGetRequestedAppointmentsQuery, GetAppointmentsDto>
+    public class GetAppointmentsHandler : IRequestHandler<GetAppointmentsQuery, GetAppointmentsDto>
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IMapper _mapper;
-        public ArtistGetRequestedAppointmentsQueryHandler(IAppointmentRepository appointmentRepository, IMapper mapper)
+        public GetAppointmentsHandler(IAppointmentRepository appointmentRepository, IMapper mapper)
         {
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
         }
 
-        public async Task<GetAppointmentsDto> Handle(ArtistGetRequestedAppointmentsQuery request, CancellationToken cancellationToken)
+        public async Task<GetAppointmentsDto> Handle(GetAppointmentsQuery request, CancellationToken cancellationToken)
         {
             AppointmentFilter appointmentFilter = new AppointmentFilter()
             {
+                UserId = request.RequestedByUserId,
                 ArtistId = request.ArtistId,
                 Status = request.Status,
                 From = request.From,

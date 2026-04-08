@@ -4,10 +4,10 @@ namespace Infrastructure.Persistence.Factories
 {
     public static class AppointmentStatusFactory
     {
-        private static readonly Dictionary<string, Func<AppointmentStatus>> _statuses = 
-            new (StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Func<AppointmentStatus>> _statuses =
+            new(StringComparer.OrdinalIgnoreCase)
         {
-            { nameof(PendingStatus), () => new PendingStatus() },
+            { nameof(RequestedStatus), () => new RequestedStatus() },
             { nameof(ConfirmedStatus), () => new ConfirmedStatus() },
             { nameof(CancelledStatus), () => new CancelledStatus() },
             { nameof(CompletedStatus), () => new CompletedStatus() }
@@ -18,7 +18,7 @@ namespace Infrastructure.Persistence.Factories
             if (string.IsNullOrWhiteSpace(typeName))
             { }
 
-            if(_statuses.TryGetValue(typeName, out var factory))
+            if (_statuses.TryGetValue(typeName, out var factory))
             {
                 return factory();
             }

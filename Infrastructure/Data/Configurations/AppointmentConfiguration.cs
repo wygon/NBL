@@ -15,6 +15,7 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.Property(e => e.RequestedDates)
+                .HasConversion<DateTimeFromToConverter>()
                 .HasColumnType("jsonb");
 
             builder.Property(e => e.NailAddons)

@@ -1,8 +1,8 @@
 ﻿namespace Domain.Entities.Statuses
 {
-    public class PendingStatus : AppointmentStatus
+    public class RequestedStatus : AppointmentStatus
     {
-        public PendingStatus()
+        public RequestedStatus()
         {
             CanCancel = true;
             CanConfirm = true;
