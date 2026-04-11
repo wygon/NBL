@@ -1,6 +1,7 @@
 ﻿using Domain.Interfaces.Repositories;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Database;
+using Infrastructure.Identity;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,8 @@ namespace Infrastructure
             //    options.ClientSecret = builder.Configuration["Instagram:ClientSecret"];
             //    options.SaveTokens = true; // Zapisze AccessToken Instagrama w Claimsach
             //});
+
+            services.AddAppAuthorization();
 
             services.AddDbContext<AppDbContext>((sp, options) =>
             {

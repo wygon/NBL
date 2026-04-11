@@ -1,8 +1,8 @@
 ﻿namespace Domain.Entities.Statuses
 {
-    public sealed class CancelledStatus : AppointmentStatus
+    public sealed class ExpiredStatus : AppointmentStatus
     {
-        public CancelledStatus()
+        public ExpiredStatus()
         {
             CanCancel = false;
             CanConfirm = false;
@@ -10,17 +10,17 @@
         }
         public override void Cancel(Appointment appointment)
         {
-            throw new InvalidOperationException("Appointment was cancelled yet.");
+            throw new InvalidOperationException("You can't cancel appointment that is expired.");
         }
 
         public override void Complete(Appointment appointment)
         {
-            throw new InvalidOperationException("You can't complete cancelled appointment.");
+            throw new InvalidOperationException("You can't cancel appointment that is expired.");
         }
 
         public override void Confirm(Appointment appointment)
         {
-            throw new InvalidOperationException("You can't confirm cancelled appointment.");
+            throw new InvalidOperationException("You can't complete appointment that was completed.");
         }
     }
 }

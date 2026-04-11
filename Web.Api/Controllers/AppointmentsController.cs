@@ -1,8 +1,11 @@
 ﻿
 using Application.Common.Interfaces;
+using Application.Features.Appointments.Commands.CancelConfirmedAppointment;
+using Application.Features.Appointments.Commands.ConfirmAppointment;
 using Application.Features.Appointments.Commands.CreateAppointment;
 using Application.Features.Appointments.Commands.CreateConfirmedAppointment;
 using Application.Features.Appointments.Queries.GetAppointments;
+using Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +25,20 @@ namespace Web.Api.Controllers
             _identity = currentUser;
         }
 
-        [Authorize]
-        [HttpPost("request")]
+        #region Client
+
+        [Authorize(Policy = Policies.User)]
+        [HttpGet("my")]
+        public async Task<ActionResult<GetAppointmentsDto>> GetMyAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
+        {
+            query.RequestedByUserId = _identity.UserId;
+            GetAppointmentsDto dto = await _mediator.Send(query);
+
+            return Ok(dto);
+        }
+
+        [Authorize(Policy = Policies.User)]
+        [HttpPost]
         public async Task<IActionResult> RequestAppointmentAsync([FromBody] CreateAppointmentCommand command)
         {
             CreateAppointmentDto dto = await _mediator.Send(command);
@@ -32,18 +47,32 @@ namespace Web.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("confirm/{id}")]
-        public async Task<IActionResult> ConfirmRequestedAppointmentAsync([FromRoute] int id)
+        [HttpDelete("cancel/{id}")]
+        public async Task<IActionResult> CancelAppointmentAsync([FromRoute] int id)
         {
-            //CreateAppointmentDto dto = await _mediator.Send(command);
+            await _mediator.Send(new CancelAppointmentCommand() { Id = id });
 
-            //return Ok(dto);
-            return Ok();
+            return NoContent();
         }
 
-        //TODO: role
-        //[Authorize(Roles = "Admin, Owner")]
-        //[Authorize]
+        #endregion
+
+        #region Artist
+        [Authorize(Policy = Policies.Artist)]
+        [HttpPut("confirm/{id}")]
+        public async Task<IActionResult> ConfirmRequestedAppointmentAsync([FromRoute] int id, [FromBody] ConfirmAppointmentCommand command)
+        {
+            if (id != command.AppointmentId)
+            {
+                return BadRequest("ID w adresie URL nie zgadza się z ID w obiekcie.");
+            }
+
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [Authorize(Policy = Policies.CanManageAppointments)]
         [HttpPost("confirmed")]
         public async Task<IActionResult> CreateConfirmedAsync([FromBody] CreateConfirmedAppointmentCommand command)
         {
@@ -52,15 +81,7 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
-        {
-            GetAppointmentsDto dto = await _mediator.Send(query);
-
-            return Ok(dto);
-        }
-
-        //[Authorize(Roles = "Artist")]
+        [Authorize(Policy = Policies.Artist)]
         [HttpGet("requested")]
         public async Task<ActionResult<GetAppointmentsDto>> ArtistGetRequestedAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
         {
@@ -71,13 +92,15 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        //[Authorize(Roles = "Admin")]
-        [HttpDelete("cancel/{id}")]
-        public async Task<IActionResult> CancelAppointmentAsync([FromRoute] int id)
-        {
-            await _mediator.Send(new CancelAppointmentCommand { Id = id });
+        #endregion
 
-            return NoContent();
+        [Authorize(Policy = Policies.AdminOnly)]
+        [HttpGet]
+        public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
+        {
+            GetAppointmentsDto dto = await _mediator.Send(query);
+
+            return Ok(dto);
         }
     }
 }

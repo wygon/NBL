@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities.Statuses
 {
-    public class RequestedStatus : AppointmentStatus
+    public sealed class RequestedStatus : AppointmentStatus
     {
         public RequestedStatus()
         {
@@ -21,9 +21,6 @@
         public override void Confirm(Appointment appointment)
         {
             appointment.TransitionTo(new ConfirmedStatus());
-
-            //W glownej encji
-            //appointment.AddDomainEvent(new AppointmentConfirmedEvent(appointment));
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Application.Features.Appointments.Commands.CreateConfirmedAppointment
+namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
 {
     public record CancelAppointmentCommand : IRequest
     {

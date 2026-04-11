@@ -10,16 +10,16 @@ namespace Domain.Entities
 {
     public sealed class Appointment : BaseAuditableEntity
     {
-        public List<DateTimeFromTo>? RequestedDates { get; init; }
+        public List<DateTimeFromTo>? RequestedDates { get; private set; }
         public AppointmentStatus Status { get; private set; }
-        public DateTime? From { get; init; } = null;
-        public DateTime? To { get; init; } = null;
-        public NailService? NailService { get; init; }
-        public NailSize? NailSize { get; init; }
-        public NailForm? NailForm { get; init; }
-        public List<NailAddons>? NailAddons { get; init; }
-        public string? AdditionalNotesUser { get; init; }
-        public string? AdditionalNotesArtist { get; init; }
+        public DateTime? From { get; private set; } = null;
+        public DateTime? To { get; private set; } = null;
+        public NailService? NailService { get; private set; }
+        public NailSize? NailSize { get; private set; }
+        public NailForm? NailForm { get; private set; }
+        public List<NailAddons>? NailAddons { get; private set; }
+        public string? AdditionalNotesUser { get; private set; }
+        public string? AdditionalNotesArtist { get; private set; }
 
         public int ArtistId { get; init; }
         public int UserId { get; init; }
@@ -83,9 +83,23 @@ namespace Domain.Entities
             return appointment;
         }
 
-        public void Confirm()
+        public void ConfirmWithModifications(DateTime confirmedFrom,
+            DateTime confirmedTo,
+            NailService? service,
+            NailSize? size,
+            NailForm? form,
+            List<NailAddons>? addons,
+            string? artistNote)
         {
             Status.Confirm(this);
+
+            From = confirmedFrom;
+            To = confirmedTo;
+            NailService = service;
+            NailSize = size;
+            NailForm = form;
+            NailAddons = addons;
+            AdditionalNotesArtist = artistNote;
 
             AddDomainEvent(new AppointmentConfirmedEvent(this));
         }

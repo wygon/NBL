@@ -1,30 +1,42 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces;
+using Domain.Constants;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
-namespace Application.Features.Appointments.Commands.CreateConfirmedAppointment
+namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
 {
     public class CancelAppointmentCommandHandler : IRequestHandler<CancelAppointmentCommand>
     {
         private readonly IAppointmentRepository _appointmentRepository;
-        public CancelAppointmentCommandHandler(IAppointmentRepository appointmentRepository)
+        private readonly IIdentityProvider _identity;
+        private readonly ILogger _logger;
+        public CancelAppointmentCommandHandler(IIdentityProvider identity, IAppointmentRepository appointmentRepository, ILogger logger)
         {
             _appointmentRepository = appointmentRepository;
+            _identity = identity;
+            _logger = logger;
         }
 
         public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
             Appointment appointment = await _appointmentRepository.GetAppointment(request.Id, cancellationToken);
 
+            _logger.LogInformation("User {UserId} is attempting to cancel appointment {AppointmentId}", _identity.UserId, request.Id);
+
             if (appointment is null)
                 throw new NotFoundException(typeof(Appointment).Name, request.Id);
 
+            if (!_identity.IsAdmin && !await _identity.AuthorizeAsync(Policies.CanManageAppointments) && appointment.UserId != _identity.UserId)
+                throw new ForbiddenAccessException("Nie masz uprawnień do anulowania tej wizyty");
+
             appointment.Cancel();
 
-            //_appointmentRepository.DeleteAppointment(appointment);
-
             await _appointmentRepository.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("User {UserId} has successfully cancelled appointment {AppointmentId}", _identity.UserId, request.Id);
         }
     }
 }

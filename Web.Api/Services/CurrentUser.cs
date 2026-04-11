@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace Web.Api.Services
@@ -7,10 +7,12 @@ namespace Web.Api.Services
     public class CurrentUser : IIdentityProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public CurrentUser(IHttpContextAccessor httpContextAccessor)
+        public CurrentUser(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
         //TODO: weryfikacja
@@ -34,6 +36,29 @@ namespace Web.Api.Services
             }
         }
 
-        public List<Role>? Roles => throw new NotImplementedException();
+        public string? Username => _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+
+        public string? UserRole => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+
+        public bool IsInRole(string roleName) =>
+            _httpContextAccessor.HttpContext?.User?.IsInRole(roleName) ?? false;
+
+        public bool HasClaim(string claimType, string claimValue) =>
+            _httpContextAccessor.HttpContext?.User?.HasClaim(claimType, claimValue) ?? false;
+
+        public string? GetClaimValue(string claimType) =>
+            _httpContextAccessor.HttpContext?.User?.FindFirstValue(claimType);
+
+        public async Task<bool> AuthorizeAsync(string policyName)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null) return false;
+
+            // Tutaj dzieje się magia: silnik sprawdza wszystkie wymagania polityki
+            var result = await _authorizationService.AuthorizeAsync(user, policyName);
+
+            return result.Succeeded;
+        }
+
     }
 }

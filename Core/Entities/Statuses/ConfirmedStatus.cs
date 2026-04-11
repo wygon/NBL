@@ -1,8 +1,6 @@
-﻿using Domain.Entities;
-
-namespace Domain.Entities.Statuses
+﻿namespace Domain.Entities.Statuses
 {
-    public class ConfirmedStatus : AppointmentStatus
+    public sealed class ConfirmedStatus : AppointmentStatus
     {
         public ConfirmedStatus()
         {

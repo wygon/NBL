@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Application.Features.Appointments.Commands.CreateConfirmedAppointment
+namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
 {
-    public class CancelAppointmentCommandValidator : AbstractValidator<CancelAppointmentCommand>
+    public class ConfirmAppointmentCommandValidator : AbstractValidator<CancelAppointmentCommand>
     {
-        public CancelAppointmentCommandValidator()
+        public ConfirmAppointmentCommandValidator()
         {
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage("Wizyta jest wymagana");
