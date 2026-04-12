@@ -5,11 +5,11 @@ using MediatR;
 
 namespace Application.Features.Appointments.Commands.CreateAppointment
 {
-    public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointmentCommand, CreateAppointmentDto>
+    public class CreateAppointmentHandler : IRequestHandler<CreateAppointmentCommand, CreateAppointmentDto>
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IArtistRepository _artistRepository;
-        public CreateAppointmentCommandHandler(IAppointmentRepository appointmentRepository, IArtistRepository artistRepository)
+        public CreateAppointmentHandler(IAppointmentRepository appointmentRepository, IArtistRepository artistRepository)
         {
             _appointmentRepository = appointmentRepository;
             _artistRepository = artistRepository;

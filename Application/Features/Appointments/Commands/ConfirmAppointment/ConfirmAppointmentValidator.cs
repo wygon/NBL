@@ -2,9 +2,9 @@
 
 namespace Application.Features.Appointments.Commands.ConfirmAppointment
 {
-    public class ConfirmAppointmentCommandValidator : AbstractValidator<ConfirmAppointmentCommand>
+    public class ConfirmAppointmentValidator : AbstractValidator<ConfirmAppointmentCommand>
     {
-        public ConfirmAppointmentCommandValidator()
+        public ConfirmAppointmentValidator()
         {
             RuleFor(x => x.AppointmentId)
                 .GreaterThan(0).WithMessage("Wizyta jest wymagana");

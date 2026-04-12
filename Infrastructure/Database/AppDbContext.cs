@@ -16,6 +16,7 @@ namespace Infrastructure.Database
 
         public DbSet<User> Users { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<AppointmentImage> AppointmentImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -2,9 +2,9 @@
 
 namespace Application.Features.Appointments.Commands.CreateAppointment
 {
-    public class CreateAppointmentCommandValidator : AbstractValidator<CreateAppointmentCommand>
+    public class CreateAppointmentValidator : AbstractValidator<CreateAppointmentCommand>
     {
-        public CreateAppointmentCommandValidator()
+        public CreateAppointmentValidator()
         {
             RuleFor(x => x.UserId)
                 .GreaterThan(0).WithMessage("Użytkownik jest wymagany");

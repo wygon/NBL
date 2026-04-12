@@ -1,6 +1,9 @@
 using Application;
 using Application.Common.Interfaces;
+using Application.Configuration;
 using AutoMapper;
+using Domain.Interfaces.Services;
+using Infrastructure.Services;
 using Scalar.AspNetCore;
 using Web.Api.Persistence.Extensions;
 using Web.Api.Services;
@@ -10,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection("StorageSettings"));
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
 {
@@ -41,8 +46,9 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddHttpContextAccessor(); //wymagane aby zapisywac dane o uzytkowniku
 builder.Services.AddScoped<IIdentityProvider, CurrentUser>(); //to wrzucic do dependencyinjection.cs
+builder.Services.AddScoped<IFileStorageService, FileLocalStorageSystem>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -50,7 +56,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 
-    var mapper = app.Services.GetRequiredService<IMapper>();
+    IMapper mapper = app.Services.GetRequiredService<IMapper>();
     mapper.ConfigurationProvider.AssertConfigurationIsValid();
 }
 
@@ -65,5 +71,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.InitialiseDatabaseAsync();
+
+app.UseStaticFiles();
 
 app.Run();

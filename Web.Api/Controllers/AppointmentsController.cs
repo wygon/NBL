@@ -1,5 +1,6 @@
 ﻿
 using Application.Common.Interfaces;
+using Application.Features.Appointments.Commands.AddAppointmentPhoto;
 using Application.Features.Appointments.Commands.CancelConfirmedAppointment;
 using Application.Features.Appointments.Commands.ConfirmAppointment;
 using Application.Features.Appointments.Commands.CreateAppointment;
@@ -100,6 +101,16 @@ namespace Web.Api.Controllers
         {
             GetAppointmentsDto dto = await _mediator.Send(query);
 
+            return Ok(dto);
+        }
+
+        [HttpPost("{id}/photos")]
+        public async Task<ActionResult<List<AddAppointmentPhotoDto>>> AddAppointmentPhotoAsync([FromRoute] int id, [FromForm] AddAppointmentPhotoCommand command)
+        {
+            if (id != command.AppointmentId)
+                return BadRequest("ID w adresie URL nie zgadza się z ID w obiekcie.");
+
+            List<AddAppointmentPhotoDto> dto = await _mediator.Send(command);
             return Ok(dto);
         }
     }

@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
 {
-    public class CancelAppointmentCommandHandler : IRequestHandler<CancelAppointmentCommand>
+    public class CancelAppointmentHandler : IRequestHandler<CancelAppointmentCommand>
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IIdentityProvider _identity;
         private readonly ILogger _logger;
-        public CancelAppointmentCommandHandler(IIdentityProvider identity, IAppointmentRepository appointmentRepository, ILogger logger)
+        public CancelAppointmentHandler(IIdentityProvider identity, IAppointmentRepository appointmentRepository, ILogger logger)
         {
             _appointmentRepository = appointmentRepository;
             _identity = identity;
@@ -22,7 +22,7 @@ namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
 
         public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
-            Appointment appointment = await _appointmentRepository.GetAppointment(request.Id, cancellationToken);
+            Appointment appointment = await _appointmentRepository.GetAppointmentAsync(request.Id, cancellationToken);
 
             _logger.LogInformation("User {UserId} is attempting to cancel appointment {AppointmentId}", _identity.UserId, request.Id);
 

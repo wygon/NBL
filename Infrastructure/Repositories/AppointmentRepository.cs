@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _context.Appointments.Remove(appointment);
         }
 
-        public async Task<Appointment?> GetAppointment(int id, CancellationToken cancellationToken = default)
+        public async Task<Appointment?> GetAppointmentAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _context.Appointments
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
@@ -55,5 +55,16 @@ namespace Infrastructure.Repositories
         {
             return await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task AddImageAsync(AppointmentImage image)
+        {
+            await _context.AppointmentImages.AddAsync(image);
+        }
+
+        public async Task AddImagesAsync(IEnumerable<AppointmentImage> images)
+        {
+            await _context.AppointmentImages.AddRangeAsync(images);
+        }
+
     }
 }

@@ -5,17 +5,17 @@ using MediatR;
 
 namespace Application.Features.Appointments.Commands.ConfirmAppointment
 {
-    public class ConfirmAppointmentCommandHandler : IRequestHandler<ConfirmAppointmentCommand>
+    public class ConfirmAppointmentHandler : IRequestHandler<ConfirmAppointmentCommand>
     {
         private readonly IAppointmentRepository _appointmentRepository;
-        public ConfirmAppointmentCommandHandler(IAppointmentRepository appointmentRepository)
+        public ConfirmAppointmentHandler(IAppointmentRepository appointmentRepository)
         {
             _appointmentRepository = appointmentRepository;
         }
 
         public async Task Handle(ConfirmAppointmentCommand request, CancellationToken cancellationToken)
         {
-            Appointment appointment = await _appointmentRepository.GetAppointment(request.AppointmentId, cancellationToken);
+            Appointment appointment = await _appointmentRepository.GetAppointmentAsync(request.AppointmentId, cancellationToken);
 
             if (appointment is null)
                 throw new NotFoundException(typeof(Appointment).Name, request.AppointmentId);
