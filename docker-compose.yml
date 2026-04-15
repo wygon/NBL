@@ -8,6 +8,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   api:
     build:
@@ -15,8 +17,12 @@ services:
       dockerfile: Web.Api/Dockerfile
     container_name: nbl_api
     ports:
-      - "5000:8080"
+      - "2115:8080"
     environment:
       - ConnectionStrings__PostgresConnection=Host=db;Port=5432;Database=NBL;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - db
+volumes:
+  postgres_data:
+  
