@@ -20,6 +20,9 @@ namespace Infrastructure
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IArtistRepository, ArtistRepository>();
+            services.AddScoped<IServiceRepository, ServiceRepository>();
+            services.AddScoped<IVariantRepository, VariantRepository>();
+            services.AddScoped<IAddonRepository, AddonRepository>();
 
             //builder.Services.AddAuthentication(options =>
             //{

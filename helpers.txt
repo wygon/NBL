@@ -1,2 +1,3 @@
 Mirgrate command:
 dotnet ef migrations add {NAME} -s Web.Api -p Infrastructure
+dotnet ef database update --project Infrastructure --startup-project Web.Api

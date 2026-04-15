@@ -9,10 +9,16 @@ namespace Application.Features.Appointments.Commands.CreateAppointment
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IArtistRepository _artistRepository;
-        public CreateAppointmentHandler(IAppointmentRepository appointmentRepository, IArtistRepository artistRepository)
+        private readonly IServiceRepository _serviceRepository;
+        private readonly IVariantRepository _variantRepository;
+        private readonly IAddonRepository _addonRepository;
+        public CreateAppointmentHandler(IAppointmentRepository appointmentRepository, IArtistRepository artistRepository, IServiceRepository serviceRepository, IVariantRepository variantRepository, IAddonRepository addonRepository)
         {
             _appointmentRepository = appointmentRepository;
             _artistRepository = artistRepository;
+            _serviceRepository = serviceRepository;
+            _variantRepository = variantRepository;
+            _addonRepository = addonRepository;
         }
 
         public async Task<CreateAppointmentDto> Handle(CreateAppointmentCommand request, CancellationToken cancellationToken)
@@ -30,14 +36,22 @@ namespace Application.Features.Appointments.Commands.CreateAppointment
                 }
             }
 
+            var service = await _serviceRepository.GetByIdAsync(request.ServiceId, cancellationToken)
+                  ?? throw new Exception("Usługa nie istnieje");
+
+            var variant = await _variantRepository.GetByIdAsync(request.VariantId, cancellationToken)
+                ?? throw new Exception("Variant does not exist");
+
+            var addons = await _addonRepository.GetByIdsAsync(request.AddonsIds, cancellationToken);
+
             Appointment appointment = Appointment.RequestAppointment(
-                request.RequestedArtistId!.Value,
+                request.RequestedArtistId,
                 request.UserId,
                 request.RequestedDates,
-                request.NailService,
+                service,
                 request.NailSize,
-                request.NailForm,
-                request.NailAddons,
+                variant,
+                addons,
                 request.AdditionalNotes
             );
 

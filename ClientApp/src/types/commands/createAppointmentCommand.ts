@@ -1,12 +1,12 @@
-import { DateTimeFromTo, NailService, NailAddons, NailSize, NailForm } from "../appointment";
+import { DateTimeFromTo, NailSize } from "../appointment";
 
 export interface CreateAppointmentCommand {
-  requestedArtistId?: number; // ? oznacza nullowalne (int?)
-  userId: number;             // required (int)
+  requestedArtistId: number | null;
+  userId: number;
   requestedDates: DateTimeFromTo[];
-  nailService?: NailService;
-  nailSize?: NailSize;
-  nailForm?: NailForm;
-  nailAddons: NailAddons[];   // List<NailAddons>
-  additionalNotes?: string;
+  serviceId: number;
+  nailSize: NailSize | null;
+  variantId: number;
+  addonsIds: number[];
+  additionalNotes: string | null;
 }

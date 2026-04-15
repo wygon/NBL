@@ -10,8 +10,12 @@ namespace Domain.Interfaces.Repositories
         Task<(List<Appointment> Appointments, int TotalCount)> GetAppointmentsAsync(AppointmentFilter filters, CancellationToken cancellationToken = default);
         void DeleteAppointment(Appointment appointment, CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-        Task<int> GetImagesCount(int appointmentId);
-        Task<AppointmentImage> AddImageAsync(AppointmentImage image);
-        Task<List<AppointmentImage>> AddImagesAsync(IEnumerable<AppointmentImage> images);
+        //Task<AppointmentImage> AddImageAsync(AppointmentImage image);
+        //Task<List<AppointmentImage>> AddImagesAsync(IEnumerable<AppointmentImage> images);
+        //Task<int> GetImagesCount(int appointmentId);
+
+        Task<List<ServiceCategory>> GetBookingDataAsync(CancellationToken ct);
+        Task<List<Addon>> GetAddonsAsync(CancellationToken ct);
+        Task<List<Variant>> GetVariantsAsync(CancellationToken ct);
     }
 }

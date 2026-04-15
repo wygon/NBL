@@ -5,6 +5,7 @@ using Application.Features.Appointments.Commands.CancelConfirmedAppointment;
 using Application.Features.Appointments.Commands.ConfirmAppointment;
 using Application.Features.Appointments.Commands.CreateAppointment;
 using Application.Features.Appointments.Commands.CreateConfirmedAppointment;
+using Application.Features.Appointments.Queries.GetAppointmentBookingData;
 using Application.Features.Appointments.Queries.GetAppointments;
 using Domain.Constants;
 using MediatR;
@@ -38,7 +39,7 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        [Authorize(Policy = Policies.User)]
+        //[Authorize(Policy = Policies.User)]
         [HttpPost]
         public async Task<IActionResult> RequestAppointmentAsync([FromBody] CreateAppointmentCommand command)
         {
@@ -112,6 +113,12 @@ namespace Web.Api.Controllers
 
             List<AddAppointmentPhotoDto> dto = await _mediator.Send(command);
             return Ok(dto);
+        }
+
+        [HttpGet("booking-data")]
+        public async Task<ActionResult<BookingDataDto>> GetBookingDataAsync()
+        {
+            return Ok(await _mediator.Send(new GetAppointmentBookingDataQuery()));
         }
     }
 }

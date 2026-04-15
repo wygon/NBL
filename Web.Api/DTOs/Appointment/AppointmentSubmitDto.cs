@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.Entities;
+using Domain.Enums;
 
 namespace Domain.DTOs.Appointment
 {
@@ -9,10 +10,10 @@ namespace Domain.DTOs.Appointment
         public required int ArtistId { get; set; }
         public required DateTime From { get; set; }
         public required DateTime To { get; set; }
-        public NailService? NailService { get; init; }
+        public Service? NailService { get; init; }
         public NailSize? NailSize { get; init; }
-        public NailForm? NailForm { get; init; }
-        public List<NailAddons> NailAddons { get; init; }
+        public Variant? Variant { get; init; }
+        public List<Addon> Addons { get; init; }
         public string AdditionalNotesArtist { get; init; }
     }
 }

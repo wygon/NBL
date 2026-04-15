@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.Entities;
+using Domain.Enums;
 using MediatR;
 
 namespace Application.Features.Appointments.Commands.ConfirmAppointment
@@ -9,10 +10,10 @@ namespace Application.Features.Appointments.Commands.ConfirmAppointment
         public required DateTime From { get; init; }
         public required DateTime To { get; init; }
         public int? ArtistId { get; init; }
-        public NailService? NailService { get; init; }
+        public Service? Service { get; init; }
         public NailSize? NailSize { get; init; }
-        public NailForm? NailForm { get; init; }
-        public List<NailAddons>? NailAddons { get; init; }
+        public Variant? Variant { get; init; }
+        public List<Addon>? Addons { get; init; }
         public string? AdditionalNotesArtist { get; init; }
     }
 }

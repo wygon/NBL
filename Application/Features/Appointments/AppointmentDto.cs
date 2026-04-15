@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Common;
+﻿using Domain.Entities;
+using Domain.Entities.Common;
 using Domain.Enums;
 
 namespace Application.Features.Appointments
@@ -10,10 +11,10 @@ namespace Application.Features.Appointments
         public required string Status { get; init; }
         public DateTime? From { get; init; } = null;
         public DateTime? To { get; init; } = null;
-        public NailService? NailService { get; init; }
+        public Service? Service { get; init; }
         public NailSize? NailSize { get; init; }
-        public NailForm? NailForm { get; init; }
-        public List<NailAddons>? NailAddons { get; init; }
+        public Variant? Variant { get; init; }
+        public List<Addon>? Addons { get; init; }
         public string? AdditionalNotesUser { get; init; }
         public string? AdditionalNotesArtist { get; init; }
     }

@@ -18,7 +18,7 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.Property(e => e.StoredPath)
-                .HasMaxLength(500)
+                .HasMaxLength(512)
                 .IsRequired();
 
             builder.Property(e => e.OriginalFileName)
@@ -27,6 +27,12 @@ namespace Infrastructure.Data.Configurations
 
             builder.Property(e => e.Label)
                 .HasMaxLength(100);
+
+            builder.HasOne(e => e.Appointment)
+                .WithMany(a => a.Images)
+                .HasForeignKey(e => e.AppointmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

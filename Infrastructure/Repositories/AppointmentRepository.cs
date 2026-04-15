@@ -20,6 +20,13 @@ namespace Infrastructure.Repositories
             _context.Appointments.Remove(appointment);
         }
 
+        public async Task<List<Addon>> GetAddonsAsync(CancellationToken ct)
+        {
+            return await _context.Addons
+                .AsNoTracking()
+                .ToListAsync(ct);
+        }
+
         public async Task<Appointment?> GetAppointmentAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _context.Appointments
@@ -30,7 +37,7 @@ namespace Infrastructure.Repositories
         {
             IQueryable<Appointment> query = _context.Appointments;
 
-            if (filters.UserId.HasValue) query = query.Where(x => x.UserId == filters.UserId);
+            if (filters.UserId.HasValue) query = query.Where(x => x.CustomerId == filters.UserId);
 
             if (filters.ArtistId.HasValue) query = query.Where(x => x.ArtistId == filters.ArtistId);
 
@@ -51,20 +58,39 @@ namespace Infrastructure.Repositories
             return (appointments, totalCount);
         }
 
+        public async Task<List<ServiceCategory>> GetBookingDataAsync(CancellationToken ct)
+        {
+            return await _context.ServiceCategories
+                .Include(c => c.Services)
+                .AsNoTracking() // Zwiększa wydajność, bo dane są tylko do odczytu
+                .ToListAsync(ct);
+        }
+
+        public async Task<List<Variant>> GetVariantsAsync(CancellationToken ct)
+        {
+            return await _context.Variants
+                .AsNoTracking()
+                .ToListAsync(ct);
+        }
+
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task AddImageAsync(AppointmentImage image)
-        {
-            await _context.AppointmentImages.AddAsync(image);
-        }
+        //public async Task AddImageAsync(AppointmentImage image)
+        //{
+        //    await _context.AppointmentImages.AddAsync(image);
+        //}
 
-        public async Task AddImagesAsync(IEnumerable<AppointmentImage> images)
-        {
-            await _context.AppointmentImages.AddRangeAsync(images);
-        }
+        //public async Task AddImagesAsync(IEnumerable<AppointmentImage> images)
+        //{
+        //    await _context.AppointmentImages.AddRangeAsync(images);
+        //}
 
+        //public Task<int> GetImagesCount(int appointmentId)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

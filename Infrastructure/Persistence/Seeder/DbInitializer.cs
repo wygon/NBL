@@ -5,7 +5,7 @@ namespace Infrastructure.Persistence.Seeder
 {
     public static class DbInitializer
     {
-        public static async Task SeedAsync(AppDbContext context)
+        public static async Task SeedAsync(AppDbContext context, bool isDevelopment)
         {
             var seederTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
@@ -20,10 +20,11 @@ namespace Infrastructure.Persistence.Seeder
 
             foreach (BaseSeeder seeder in seederInstances)
             {
+                seeder.IsDevelopment = isDevelopment;
                 await seeder.SeedAsync();
             }
 
-            await context.SaveChangesAsync(default);
+            //await context.SaveChangesAsync(default);
         }
     }
 }

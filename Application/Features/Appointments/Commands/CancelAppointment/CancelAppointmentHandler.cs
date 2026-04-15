@@ -13,7 +13,7 @@ namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IIdentityProvider _identity;
         private readonly ILogger _logger;
-        public CancelAppointmentHandler(IIdentityProvider identity, IAppointmentRepository appointmentRepository, ILogger logger)
+        public CancelAppointmentHandler(IIdentityProvider identity, IAppointmentRepository appointmentRepository, ILogger<CancelAppointmentHandler> logger)
         {
             _appointmentRepository = appointmentRepository;
             _identity = identity;
@@ -29,7 +29,7 @@ namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
             if (appointment is null)
                 throw new NotFoundException(typeof(Appointment).Name, request.Id);
 
-            if (!_identity.IsAdmin && !await _identity.AuthorizeAsync(Policies.CanManageAppointments) && appointment.UserId != _identity.UserId)
+            if (!_identity.IsAdmin && !await _identity.AuthorizeAsync(Policies.CanManageAppointments) && appointment.CustomerId != _identity.UserId)
                 throw new ForbiddenAccessException("Nie masz uprawnień do anulowania tej wizyty");
 
             appointment.Cancel();

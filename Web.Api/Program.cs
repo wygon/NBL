@@ -48,6 +48,8 @@ builder.Services.AddHttpContextAccessor(); //wymagane aby zapisywac dane o uzytk
 builder.Services.AddScoped<IIdentityProvider, CurrentUser>(); //to wrzucic do dependencyinjection.cs
 builder.Services.AddScoped<IFileStorageService, FileLocalStorageSystem>();
 
+builder.Logging.AddConsole();
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,7 +72,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.InitialiseDatabaseAsync();
+await app.InitialiseDatabaseAsync(app.Environment.IsDevelopment());
 
 app.UseStaticFiles();
 

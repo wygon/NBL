@@ -16,14 +16,6 @@ namespace Infrastructure.Persistence.Seeder
         public override async Task SeedAsync()
         {
             if (_context.Users.Any()) return;
-
-            var userFaker = new Faker<User>()
-                .RuleFor(u => u.Name, f => f.Person.FirstName)
-                .RuleFor(u => u.InstagramName, f => f.Internet.UserName())
-                .RuleFor(u => u.PhoneNumber, f => f.Person.Phone)
-                .RuleFor(u => u.PhotoUrl, f => f.Internet.Avatar())
-                .RuleFor(u => u.Email, f => f.Internet.Email());
-
             List<User> users = new List<User>();
 
             users.Add(new User()
@@ -35,7 +27,17 @@ namespace Infrastructure.Persistence.Seeder
                 Email = "szymon302.sws@gmail.com"
             });
 
-            users.AddRange(userFaker.Generate(10));
+            if (!IsDevelopment)
+            {
+                var userFaker = new Faker<User>()
+                    .RuleFor(u => u.Name, f => f.Person.FirstName)
+                    .RuleFor(u => u.InstagramName, f => f.Internet.UserName())
+                    .RuleFor(u => u.PhoneNumber, f => f.Person.Phone)
+                    .RuleFor(u => u.PhotoUrl, f => f.Internet.Avatar())
+                    .RuleFor(u => u.Email, f => f.Internet.Email());
+
+                users.AddRange(userFaker.Generate(10));
+            }
 
             _context.Users.AddRange(users);
 

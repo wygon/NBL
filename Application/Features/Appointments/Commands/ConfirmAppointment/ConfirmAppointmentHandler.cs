@@ -20,7 +20,7 @@ namespace Application.Features.Appointments.Commands.ConfirmAppointment
             if (appointment is null)
                 throw new NotFoundException(typeof(Appointment).Name, request.AppointmentId);
 
-            appointment.ConfirmWithModifications(request.From, request.To, request.NailService, request.NailSize, request.NailForm, request.NailAddons, request.AdditionalNotesArtist);
+            appointment.ConfirmWithModifications(request.From, request.To, request.Service, request.NailSize, request.Variant, request.Addons, request.AdditionalNotesArtist);
 
             await _appointmentRepository.SaveChangesAsync(cancellationToken);
         }

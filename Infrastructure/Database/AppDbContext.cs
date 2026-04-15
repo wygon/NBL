@@ -17,6 +17,10 @@ namespace Infrastructure.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<AppointmentImage> AppointmentImages { get; set; }
+        public DbSet<Addon> Addons { get; set; }
+        public DbSet<Variant> Variants { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,7 +29,7 @@ namespace Infrastructure.Database
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             await PublishDomainEvents(cancellationToken);
 

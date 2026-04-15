@@ -27,8 +27,8 @@ namespace Application.Features.Appointments.Commands.CreateConfirmedAppointment
                 request.DateFromTo,
                 request.NailService,
                 request.NailSize,
-                request.NailForm,
-                request.NailAddons,
+                request.Variant,
+                request.Addons,
                 request.AdditionalNotes
             );
 

@@ -1,3 +1,5 @@
+
+//do zmiany bo stare
 export const ApiRoutes = {
   BaseUrl: 'http://10.0.2.2:2115/api', // lub pobierane z Process.env
   
