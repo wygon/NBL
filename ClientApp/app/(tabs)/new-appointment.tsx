@@ -9,7 +9,7 @@ import { DateTimeFromTo } from '@/src/types/appointment';
 import dayjs from 'dayjs';
 import { DateRangePickerSheet } from '@/components/DateRangePickerSheet';
 import { apiClient } from '@/src/api/apiClient';
-import { CreateAppointmentCommand } from '@/src/types/commands/createAppointmentCommand';
+import { CreateAppointmentCommand } from '@/src/types/commands/CreateAppointmentCommand';
 
 // Enum rozmiarów paznokci (zgodny z Twoim backendem C#)
 const NAIL_SIZES = [

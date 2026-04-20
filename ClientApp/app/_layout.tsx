@@ -52,7 +52,6 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}>
-      <PortalProvider shouldAddRootHost>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           
@@ -79,7 +78,6 @@ export default function RootLayout() {
           <StatusBar style="auto" />
         </ThemeProvider>
       </QueryClientProvider>
-      </PortalProvider>
     </TamaguiProvider>
   );
 }

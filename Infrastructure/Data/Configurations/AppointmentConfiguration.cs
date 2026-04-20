@@ -65,7 +65,7 @@ namespace Infrastructure.Data.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
-            builder.Ignore(e => e.TotalDurationMinutes);
+            builder.Ignore(e => e.TotalDurationInMinutes);
             builder.Ignore(e => e.TotalPrice);
         }
     }

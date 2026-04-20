@@ -37,8 +37,43 @@ namespace Domain.Entities
         private readonly List<AppointmentImage> _images = new();
         public IReadOnlyCollection<AppointmentImage> Images => _images.AsReadOnly();
 
-        public int TotalDurationMinutes => Service.DefaultDurationInMinutes + Addons.Sum(addon => addon.AdditionalDurationMinutes);
-        public decimal TotalPrice => Service.DefaultPrice + _addons.Sum(addon => addon.AdditionalPrice);
+        public int TotalDurationInMinutes
+        {
+            get
+            {
+                int time = 0;
+                if (Service != null)
+                {
+                    time = Service.DefaultDurationInMinutes;
+                }
+
+                if (Addons is { Count: > 0 })
+                {
+                    time += Addons.Sum(addon => addon.AdditionalDurationMinutes);
+                }
+
+                return time;
+            }
+        }
+
+        public decimal TotalPrice
+        {
+            get
+            {
+                decimal price = 0m;
+                if (Service != null)
+                {
+                    price = Service.DefaultPrice;
+                }
+
+                if (Addons is { Count: > 0 })
+                {
+                    price += Addons.Sum(addon => addon.AdditionalPrice);
+                }
+
+                return price;
+            }
+        }
 
 
         private Appointment(int artistId, int userId, AppointmentStatus status, List<DateTimeFromTo> requestedDates,

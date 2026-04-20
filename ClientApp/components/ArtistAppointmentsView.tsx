@@ -1,0 +1,188 @@
+// src/components/ArtistAppointmentsView.tsx
+import React, { useState } from 'react';
+import { FlatList, RefreshControl } from 'react-native';
+import { YStack, XStack, Text, Button, Spinner, Card, View, ScrollView } from 'tamagui';
+import { Ionicons } from '@expo/vector-icons';
+import dayjs from 'dayjs';
+import { useAppointments } from '@/src/hooks/useAppointments';
+import { AppointmentDto } from '@/src/types/appointment';
+import { EditAppointmentSheet } from './EditAppointmentSheet';
+
+interface ArtistAppointmentsViewProps {
+  artistId: number;
+  isManager?: boolean;
+}
+
+export default function ArtistAppointmentsView({ artistId, isManager = false }: ArtistAppointmentsViewProps) {
+  const [filterMode, setFilterMode] = useState<'all' | 'mine' | 'unassigned' | 'all_artists'>('mine');
+  const [selectedForEdit, setSelectedForEdit] = useState<AppointmentDto | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const queryFilters = {
+    artistId: filterMode === 'all_artists' || filterMode === 'unassigned' ? null : artistId,
+    includeUnassigned: filterMode === 'mine' ? false : true,
+    page: 1,
+    count: 20,
+  };
+
+  const handleEditPress = (appointment: AppointmentDto) => {
+    setSelectedForEdit(appointment);
+    setIsSheetOpen(true);
+  };
+
+  const handleSaveUpdatedAppointment = async (updatedFields: Partial<AppointmentDto>) => {
+    console.log("Dane do wysłania do API:", updatedFields);
+    // Tu wyślesz mutację: mutate(updatedFields);
+    setIsSheetOpen(false);
+  };
+
+  const { data, isLoading, isFetching, refetch } = useAppointments(queryFilters);
+
+  const renderAppointment = ({ item }: { item: AppointmentDto }) => {
+    const isUnassigned = item.artistId == null;
+    const nailSizeLabels = ['S', 'M', 'L', 'XL', 'Mega'];
+    const sizeLabel = item.nailSize !== null ? nailSizeLabels[item.nailSize] : '-';
+
+    return (
+      <Card
+        elevation="$2"
+        borderWidth={1}
+        marginVertical="$2"
+        backgroundColor={isUnassigned ? '#FFF0F5' : '$background'}
+        borderColor={isUnassigned ? '#FF2A85' : '$borderColor'}
+      >
+        <Card.Header padding="$4" paddingBottom="$2">
+          <XStack justifyContent="space-between" alignItems="center">
+            <YStack>
+              <Text fontSize="$3" color="$gray10">Klient: {item.customerName || 'Anonim'}</Text>
+              <Text fontWeight="bold" fontSize="$5">
+                {item.service?.name} {item.variant ? `(${item.variant.name})` : ''}
+              </Text>
+            </YStack>
+
+            <YStack alignItems="flex-end">
+              <Text fontWeight="bold" color="#FF2A85" fontSize="$5">
+                {item.totalPrice} zł
+              </Text>
+              <XStack alignItems="center" gap="$1">
+                <Ionicons name="time-outline" size={12} color="$gray10" />
+                <Text fontSize="$2" color="$gray10">
+                  {item.totalDurationInMinutes} min
+                </Text>
+              </XStack>
+            </YStack>
+          </XStack>
+        </Card.Header>
+
+        <Card.Footer flexDirection="column" gap="$3" marginTop="$2" paddingHorizontal="$4" paddingBottom="$4">
+          {/* Wyświetlanie wybranych dat (requested) na karcie */}
+          <YStack gap="$1">
+            <Text fontSize="$2" color="$gray10">Prośby o termin:</Text>
+            <YStack gap="$1">
+              {item.requestedDates?.map((d, i) => (
+                <XStack key={i} gap="$2" alignItems="center">
+                  <View backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$0.5" borderRadius="$2">
+                    <Text fontSize="$2" fontWeight="bold">
+                      {dayjs(d.from).format('DD.MM')}
+                    </Text>
+                  </View>
+                  <Text fontSize="$2" color="$gray11">
+                    {dayjs(d.from).format('HH:mm')} - {dayjs(d.to).format('HH:mm')}
+                  </Text>
+                </XStack>
+              ))}
+            </YStack>
+          </YStack>
+
+          {/* Wewnątrz funkcji renderAppointment (Card.Footer) */}
+          <XStack gap="$2">
+            {!item.artistId ? (
+              // Jeśli nieprzypisane: Artystka widzi "Przyjmij", Manager widzi "Przypisz / Edytuj"
+              <Button
+                flex={1}
+                backgroundColor="#FF2A85"
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handleEditPress(item);
+                }}
+              >
+                {isManager ? "Przypisz / Edytuj" : "Przyjmij"}
+              </Button>
+            ) : (
+              // Jeśli przypisane: Manager edytuje wszystko, Artystka tylko swoje
+              (item.artistId === artistId || isManager) ? (
+                <Button
+                  flex={1}
+                  backgroundColor="transparent"
+                  borderWidth={1}
+                  borderColor="#FF2A85"
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleEditPress(item);
+                  }}
+                >
+                  <Text color="#FF2A85" fontWeight="bold">Edytuj / Status</Text>
+                </Button>
+              ) : (
+                <View flex={1} alignItems="center" paddingVertical="$2" backgroundColor="$gray3" borderRadius="$4">
+                  <Text color="$gray10" fontSize="$2">Przypisane do innego artysty</Text>
+                </View>
+              )
+            )}
+          </XStack>
+        </Card.Footer>
+      </Card >
+    );
+  };
+
+  return (
+    <YStack flex={1} padding="$4" backgroundColor="$background">
+      <Text fontSize="$6" fontWeight="bold" marginBottom="$4">Panel Stylistki</Text>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} marginBottom="$4">
+        {/* DODANO paddingBottom i paddingHorizontal aby przyciski miały miejsce na obramowanie/cień */}
+        <XStack gap="$2" paddingBottom="$2" paddingHorizontal="$1">
+          {isManager && (
+            <Button
+              size="$3"
+              theme={filterMode === 'all_artists' ? 'active' : undefined}
+              onPress={() => setFilterMode('all_artists')}
+            >
+              Cały Salon
+            </Button>
+          )}
+          <Button size="$3" theme={filterMode === 'all' ? 'active' : undefined} onPress={() => setFilterMode('all')}>
+            Wszystkie (Moje i Puste)
+          </Button>
+          <Button size="$3" theme={filterMode === 'mine' ? 'active' : undefined} onPress={() => setFilterMode('mine')}>
+            Tylko moje
+          </Button>
+          <Button size="$3" theme={filterMode === 'unassigned' ? 'active' : undefined} onPress={() => setFilterMode('unassigned')}>
+            Do wzięcia
+          </Button>
+        </XStack>
+      </ScrollView>
+
+      {isLoading ? (
+        <Spinner size="large" color="#FF2A85" />
+      ) : (
+        <FlatList
+          data={data?.appointments || []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderAppointment}
+          refreshControl={<RefreshControl refreshing={isFetching && !isLoading} onRefresh={refetch} />}
+          ListEmptyComponent={<Text textAlign="center" color="$gray10" marginTop="$4">Brak wizyt.</Text>}
+        />
+      )}
+
+      {/* MODAL / SHEET EDYCJI */}
+      <EditAppointmentSheet
+        appointment={selectedForEdit}
+        isOpen={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        onSaveAndAccept={handleSaveUpdatedAppointment}
+        isManager={isManager} // PRZEKAŻ TUTAJ!
+      />
+    </YStack>
+  );
+}

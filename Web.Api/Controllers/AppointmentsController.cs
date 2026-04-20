@@ -94,9 +94,6 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        #endregion
-
-        [Authorize(Policy = Policies.AdminOnly)]
         [HttpGet]
         public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
         {
@@ -104,6 +101,17 @@ namespace Web.Api.Controllers
 
             return Ok(dto);
         }
+
+        #endregion
+
+        //[Authorize(Policy = Policies.AdminOnly)]
+        //[HttpGet]
+        //public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
+        //{
+        //    GetAppointmentsDto dto = await _mediator.Send(query);
+
+        //    return Ok(dto);
+        //}
 
         [HttpPost("{id}/photos")]
         public async Task<ActionResult<List<AddAppointmentPhotoDto>>> AddAppointmentPhotoAsync([FromRoute] int id, [FromForm] AddAppointmentPhotoCommand command)

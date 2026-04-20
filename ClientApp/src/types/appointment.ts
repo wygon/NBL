@@ -1,15 +1,51 @@
-// types/appointment.ts
+export interface ServiceDto {
+  id: number;
+  name: string;
+  defaultPrice: number;
+  defaultDurationInMinutes: number;
+}
 
-export enum NailService {
-  ManicureHybrid = 1,
-  ManicureClassic = 2,
-  ZelNaturalnaPlytka = 3,
-  PrzedluzenieZelowe = 4,
-  UzupelnienieZelowe = 5,
-  Pedicure = 6,
-  PedicureFrezarkowy = 7,
-  SciaganieHybrydyZelu = 8,
-  ClassicManicure = 9
+export interface VariantDto {
+  id: number;
+  name: string;
+}
+
+export interface AddonDto {
+  id: number;
+  name: string;
+  additionalPrice: number;
+  additionalDurationMinutes: number;
+}
+
+export interface AppointmentDto {
+  id: number;
+  artistId: number | null;
+  status: string;
+  from: string | null;
+  to: string | null;
+
+  totalPrice: number; 
+  totalDurationInMinutes: number;
+
+  service: ServiceDto | null;
+  variant: VariantDto | null;
+  addons: AddonDto[] | null;
+
+  nailSize: number | null;
+  additionalNotesUser: string | null;
+  additionalNotesArtist: string | null;
+  
+  customerName?: string; 
+  customerPhone?: string;
+  
+  requestedDates: { from: string; to: string }[] | null;
+}
+
+export interface GetAppointmentsResponse {
+  appointments: AppointmentDto[];
+  totalCount: number;
+  page: number;
+  count: number;
 }
 
 export enum NailSize {
@@ -18,27 +54,25 @@ export enum NailSize {
   Long = 3
 }
 
-export enum NailForm {
-  Migdal = 1,
-  Kwadrat = 2,
-  MiekkiKwadrat = 3,
-  Owal = 4
-}
-
-// Mimo że w C# jest to [Flags], we frontendzie zazwyczaj 
-// najwygodniej przesyłać to jako tablicę wybranych wartości (number[]).
-export enum NailAddons {
-  French = 1,
-  Ozdoby3D = 2,
-  Cyrkonie = 3,
-  Pylek = 4,
-  Syrenka = 5,
-  Princess = 6,
-  Folia = 7,
-  ZdobieniaMalowane = 8
-}
-
 export interface DateTimeFromTo {
   from: Date | string; // string przydaje się przy serializacji JSON do API
   to: Date | string;
+}
+
+export interface GetAppointmentsQuery {
+  requestedByUserId?: number | null;
+  artistId?: number | null;
+  nullArtist?: boolean;
+  status?: string | null;
+  from?: string | null;
+  to?: string | null;
+  page: number;
+  count: number;
+}
+
+export interface GetAppointmentsResponse {
+  appointments: AppointmentDto[];
+  totalCount: number;
+  page: number;
+  count: number;
 }

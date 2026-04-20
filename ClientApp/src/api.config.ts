@@ -21,6 +21,7 @@ export const API_CONFIG = {
     BOOKING_DATA: '/api/appointments/booking-data',
     CREATE_APPOINTMENT: '/api/appointments',
     REQUEST_APPOINTMENT : '/api/appointments',
+    GET_APPOINTMENTS : '/api/appointments',
   },
   TIMEOUT: 5000,
 };

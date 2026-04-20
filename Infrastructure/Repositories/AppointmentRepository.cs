@@ -39,9 +39,15 @@ namespace Infrastructure.Repositories
 
             if (filters.UserId.HasValue) query = query.Where(x => x.CustomerId == filters.UserId);
 
-            if (filters.ArtistId.HasValue) query = query.Where(x => x.ArtistId == filters.ArtistId);
+            if (filters.ArtistId.HasValue && filters.IncludeUnassigned)
+                query = query.Where(x => x.ArtistId == filters.ArtistId || x.ArtistId == null);
+            else if (filters.ArtistId.HasValue)
+                query = query.Where(x => x.ArtistId == filters.ArtistId);
+            else if (filters.IncludeUnassigned)
+                query = query.Where(x => x.ArtistId == null);
 
-            if (filters.Status != null) query = query.Where(x => x.Status == filters.Status);
+            if (filters.Status != null)
+                query = query.Where(x => x.Status.GetType() == filters.Status.GetType());
 
             if (filters.From.HasValue) query = query.Where(x => x.From >= filters.From);
 
@@ -50,6 +56,10 @@ namespace Infrastructure.Repositories
             int totalCount = await query.CountAsync(cancellationToken);
 
             List<Appointment> appointments = await query
+                .Include(x => x.Customer)
+                .Include(x => x.Service)
+                .Include(x => x.Variant)
+                .Include(x => x.Addons)
                 .OrderByDescending(x => x.From)
                 .Skip((filters.Page - 1) * filters.Count)
                 .Take(filters.Count)
