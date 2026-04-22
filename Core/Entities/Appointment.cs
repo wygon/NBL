@@ -4,8 +4,6 @@ using Domain.Entities.Statuses;
 using Domain.Enums;
 using Domain.Events;
 
-#nullable enable
-
 namespace Domain.Entities
 {
     public sealed class Appointment : BaseAuditableEntity
@@ -18,18 +16,15 @@ namespace Domain.Entities
         public string? AdditionalNotesUser { get; private set; }
         public string? AdditionalNotesArtist { get; private set; }
 
-        public int? ArtistId { get; init; }
-        public int CustomerId { get; init; }
-        public int ServiceId { get; init; }
-        public int VariantId { get; init; }
+        public int? ArtistId { get; private set; }
+        public int CustomerId { get; private set; }
+        public int ServiceId { get; private set; }
+        public int VariantId { get; private set; }
 
-        public User? Artist { get; init; } = null!;
-        public User Customer { get; init; } = null!;
+        public User? Artist { get; private set; } = null!;
+        public User Customer { get; private set; } = null!;
         public Service Service { get; private set; }
 
-        /// <summary>
-        /// Zastanowic sie jak to ugólnić, bo w sumie to może być różne dla różnych usług, a nie tylko dla paznokci. Może po prostu "Variant" albo "Option" albo coś w tym stylu?
-        /// </summary>
         public Variant Variant { get; private set; }
         private readonly List<Addon> _addons = new();
         public IReadOnlyCollection<Addon> Addons => _addons.AsReadOnly();
@@ -37,6 +32,7 @@ namespace Domain.Entities
         private readonly List<AppointmentImage> _images = new();
         public IReadOnlyCollection<AppointmentImage> Images => _images.AsReadOnly();
 
+        //Zmienic na pobieranie z bazy
         public int TotalDurationInMinutes
         {
             get
@@ -56,6 +52,7 @@ namespace Domain.Entities
             }
         }
 
+        //Zmienic na pobieranie z bazy
         public decimal TotalPrice
         {
             get
@@ -126,47 +123,66 @@ namespace Domain.Entities
             return appointment;
         }
 
-        public void ConfirmWithModifications(DateTime confirmedFrom,
-            DateTime confirmedTo,
-            Service? service,
-            NailSize? size,
-            Variant? form,
-            List<Addon>? nailAddons,
-            string? artistNote)
+        public void ConfirmWithModifications(
+    DateTime confirmedFrom,
+    DateTime confirmedTo,
+    int? artistId,
+    int? serviceId,
+    NailSize? size,
+    int? variantId,
+    List<Addon>? newAddons,
+    string? artistNote)
+        //decimal? customPrice,
+        //int? customDuration)
         {
             Status.Confirm(this);
 
             From = confirmedFrom;
             To = confirmedTo;
-            Service = service;
-            NailSize = size;
-            Variant = form;
 
+            ArtistId = artistId;
+            if (serviceId.HasValue) ServiceId = serviceId.Value;
+            if (variantId.HasValue) VariantId = variantId.Value;
+
+            NailSize = size;
             AdditionalNotesArtist = artistNote;
 
-            if (nailAddons != null) _addons.AddRange(nailAddons);
+            if (newAddons != null)
+            {
+                _addons.Clear();
+                _addons.AddRange(newAddons);
+            }
 
             AddDomainEvent(new AppointmentConfirmedEvent(this));
+        }
+
+        public void ChangeArtist(User? newArtist)
+        {
+            User? oldArtist = Artist;
+            Artist = newArtist;
+            ArtistId = newArtist?.Id;
+
+            AddDomainEvent(new AppointmentArtistChangedEvent(this, oldArtist, newArtist));
         }
 
         public void Cancel()
         {
             Status.Cancel(this);
 
-            //AddDomainEvent(new AppointmentCancelledEvent(this));
+            AddDomainEvent(new AppointmentCancelledEvent(this));
         }
 
         public void Completed()
         {
             Status.Complete(this);
 
-            //AddDomainEvent(new AppointmentCompletedEvent(this));
+            AddDomainEvent(new AppointmentFinishedNotification(this));
         }
 
         public void AddImage(AppointmentImage image)
         {
             if (_images.Count >= Constants.AppointmentConstants.MaxImagesPerAppointment)
-                throw new InvalidOperationException("Cannot add more than 5 images to an appointment.");
+                throw new InvalidOperationException($"Cannot add more than {Constants.AppointmentConstants.MaxImagesPerAppointment} images to an appointment.");
 
             _images.Add(image);
         }

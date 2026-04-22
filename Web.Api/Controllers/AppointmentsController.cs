@@ -1,10 +1,12 @@
 ﻿
 using Application.Common.Interfaces;
+using Application.Features.Appointments;
 using Application.Features.Appointments.Commands.AddAppointmentPhoto;
 using Application.Features.Appointments.Commands.CancelConfirmedAppointment;
 using Application.Features.Appointments.Commands.ConfirmAppointment;
 using Application.Features.Appointments.Commands.CreateAppointment;
 using Application.Features.Appointments.Commands.CreateConfirmedAppointment;
+using Application.Features.Appointments.Commands.FinishAppointment;
 using Application.Features.Appointments.Queries.GetAppointmentBookingData;
 using Application.Features.Appointments.Queries.GetAppointments;
 using Domain.Constants;
@@ -60,18 +62,32 @@ namespace Web.Api.Controllers
         #endregion
 
         #region Artist
-        [Authorize(Policy = Policies.Artist)]
+        //[Authorize(Policy = Policies.Artist)]
         [HttpPut("confirm/{id}")]
-        public async Task<IActionResult> ConfirmRequestedAppointmentAsync([FromRoute] int id, [FromBody] ConfirmAppointmentCommand command)
+        public async Task<IActionResult> ConfirmRequestedAppointmentAsync([FromRoute] int id, [FromBody] AppointmentDto request)
         {
-            if (id != command.AppointmentId)
-            {
-                return BadRequest("ID w adresie URL nie zgadza się z ID w obiekcie.");
-            }
+            if (request.From == null || request.To == null)
+                return BadRequest("Pole 'From' i 'To' są wymagane.");
 
+            var command = new ConfirmAppointmentCommand
+            {
+                AppointmentId = id,
+                From = request.From.Value,
+                To = request.To.Value,
+                ArtistId = request.ArtistId,
+                ServiceId = request.Service?.Id,
+                VariantId = request.Variant?.Id,
+                AddonIds = request.Addons?.Select(a => a.Id).ToList(),
+                NailSize = request.NailSize,
+                AdditionalNotesArtist = request.AdditionalNotesArtist,
+                //TotalPrice = request.TotalPrice,
+                //TotalDurationInMinutes = request.TotalDurationInMinutes
+            };
+
+            // Wysyłamy gotową, poprawną komendę do warstwy Application
             await _mediator.Send(command);
 
-            return NoContent();
+            return NoContent(); // 204 No Content - standard dla operacji PUT
         }
 
         [Authorize(Policy = Policies.CanManageAppointments)]
@@ -100,6 +116,19 @@ namespace Web.Api.Controllers
             GetAppointmentsDto dto = await _mediator.Send(query);
 
             return Ok(dto);
+        }
+
+        [HttpPut("{id}/finish")]
+        public async Task<ActionResult> FinishAppointmentAsync([FromRoute] int id)
+        {
+            FinishAppointmentCommand command = new FinishAppointmentCommand
+            {
+                AppointmentId = id
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent(); // Dla PUT zazwyczaj zwraca się 204 NoContent, ale Ok() (200) też jest w porządku
         }
 
         #endregion

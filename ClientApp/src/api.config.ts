@@ -22,6 +22,8 @@ export const API_CONFIG = {
     CREATE_APPOINTMENT: '/api/appointments',
     REQUEST_APPOINTMENT : '/api/appointments',
     GET_APPOINTMENTS : '/api/appointments',
+    CONFIRM_APPOINTMENT : '/api/appointments/confirm',
+    FINISH_APPOINTMENT : (id: number) => `/api/appointments/${id}/finish`,
   },
   TIMEOUT: 5000,
 };

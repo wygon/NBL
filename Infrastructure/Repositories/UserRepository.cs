@@ -1,21 +1,28 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Common;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class UserRepository(AppDbContext context) : IUserRepository
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        private readonly AppDbContext _context = context;
+        public UserRepository(AppDbContext context) : base(context) { }
 
-        public Task AddAsync(User user)
+        public Task<bool> IsArtistAvailableAsync(int artistId, DateTimeFromTo fromTo, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(true);
         }
 
-        public Task<User> GetByIdAsync(int id)
+        public Task<bool> IsAnyAvailableAsync(DateTimeFromTo fromTo, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(true);
+        }
+
+        public async Task<User> GetManager(CancellationToken cancellationToken = default)
+        {
+            return await _context.Users.FirstAsync();
         }
 
         //public async Task<int> SaveUser(UserCreateDto userDto)

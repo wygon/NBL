@@ -7,8 +7,8 @@ namespace Application.Features.Appointments.Commands.CreateConfirmedAppointment
     public class CreateConfirmedAppointmentHandler : IRequestHandler<CreateConfirmedAppointmentCommand, CreateConfirmedAppointmentDto>
     {
         private readonly IAppointmentRepository _appointmentRepository;
-        private readonly IArtistRepository _artistRepository;
-        public CreateConfirmedAppointmentHandler(IAppointmentRepository appointmentRepository, IArtistRepository artistRepository)
+        private readonly IUserRepository _artistRepository;
+        public CreateConfirmedAppointmentHandler(IAppointmentRepository appointmentRepository, IUserRepository artistRepository)
         {
             _appointmentRepository = appointmentRepository;
             _artistRepository = artistRepository;

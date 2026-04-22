@@ -18,7 +18,7 @@ namespace Application.Features.Appointments.Queries.GetAppointmentBookingData
         public async Task<BookingDataDto> Handle(GetAppointmentBookingDataQuery request, CancellationToken cancellationToken)
         {
             List<ServiceCategory> categories = await _appointmentRepository.GetBookingDataAsync(cancellationToken);
-            List<Addon> addons = await _appointmentRepository.GetAddonsAsync(cancellationToken);
+            List<Addon> addons = await _appointmentRepository.GetAddonsAsync(ct: cancellationToken);
             List<Variant> variants = await _appointmentRepository.GetVariantsAsync(cancellationToken);
 
             return new BookingDataDto

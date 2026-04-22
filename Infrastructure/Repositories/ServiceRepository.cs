@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces.Repositories;
-using InfrastrucancellationTokenure.Repositories;
 using Infrastructure.Database;
 
 namespace Infrastructure.Repositories

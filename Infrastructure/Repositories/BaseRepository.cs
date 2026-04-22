@@ -2,7 +2,7 @@
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace InfrastrucancellationTokenure.Repositories
+namespace Infrastructure.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
@@ -47,9 +47,9 @@ namespace InfrastrucancellationTokenure.Repositories
             _dbSet.Remove(entity);
         }
 
-        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
-            await _context.SaveChangesAsync(cancellationToken);
+            return await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

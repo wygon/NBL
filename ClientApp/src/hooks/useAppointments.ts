@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../api/apiClient';
 import { API_CONFIG } from '../api.config';
+import { apiClient } from '../api/apiClient';
 import { GetAppointmentsQuery, GetAppointmentsResponse } from '../types/appointment';
 
 export const useAppointments = (filters: GetAppointmentsQuery) => {

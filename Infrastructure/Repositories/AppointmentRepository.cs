@@ -20,16 +20,23 @@ namespace Infrastructure.Repositories
             _context.Appointments.Remove(appointment);
         }
 
-        public async Task<List<Addon>> GetAddonsAsync(CancellationToken ct)
+        public async Task<List<Addon>> GetAddonsAsync(List<int> ids = null, CancellationToken ct = default)
         {
-            return await _context.Addons
-                .AsNoTracking()
-                .ToListAsync(ct);
+            IQueryable<Addon> query = _context.Addons;
+
+            if (ids.Any()) query = query.Where(a => ids.Contains(a.Id));
+
+            return await query.ToListAsync(ct);
         }
 
         public async Task<Appointment?> GetAppointmentAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _context.Appointments
+                .Include(x => x.Customer)
+                .Include(x => x.Artist)
+                .Include(x => x.Service)
+                .Include(x => x.Variant)
+                .Include(x => x.Addons)
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
         }
 

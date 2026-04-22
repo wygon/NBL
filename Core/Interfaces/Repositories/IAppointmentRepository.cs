@@ -15,7 +15,7 @@ namespace Domain.Interfaces.Repositories
         //Task<int> GetImagesCount(int appointmentId);
 
         Task<List<ServiceCategory>> GetBookingDataAsync(CancellationToken ct);
-        Task<List<Addon>> GetAddonsAsync(CancellationToken ct);
+        Task<List<Addon>> GetAddonsAsync(List<int> ids = null, CancellationToken ct = default);
         Task<List<Variant>> GetVariantsAsync(CancellationToken ct);
     }
 }

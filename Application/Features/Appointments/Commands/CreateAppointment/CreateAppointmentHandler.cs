@@ -8,11 +8,11 @@ namespace Application.Features.Appointments.Commands.CreateAppointment
     public class CreateAppointmentHandler : IRequestHandler<CreateAppointmentCommand, CreateAppointmentDto>
     {
         private readonly IAppointmentRepository _appointmentRepository;
-        private readonly IArtistRepository _artistRepository;
+        private readonly IUserRepository _artistRepository;
         private readonly IServiceRepository _serviceRepository;
         private readonly IVariantRepository _variantRepository;
         private readonly IAddonRepository _addonRepository;
-        public CreateAppointmentHandler(IAppointmentRepository appointmentRepository, IArtistRepository artistRepository, IServiceRepository serviceRepository, IVariantRepository variantRepository, IAddonRepository addonRepository)
+        public CreateAppointmentHandler(IAppointmentRepository appointmentRepository, IUserRepository artistRepository, IServiceRepository serviceRepository, IVariantRepository variantRepository, IAddonRepository addonRepository)
         {
             _appointmentRepository = appointmentRepository;
             _artistRepository = artistRepository;

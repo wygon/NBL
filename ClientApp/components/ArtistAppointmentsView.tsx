@@ -1,11 +1,12 @@
 // src/components/ArtistAppointmentsView.tsx
-import React, { useState } from 'react';
-import { FlatList, RefreshControl } from 'react-native';
-import { YStack, XStack, Text, Button, Spinner, Card, View, ScrollView } from 'tamagui';
-import { Ionicons } from '@expo/vector-icons';
-import dayjs from 'dayjs';
+import { confirmAppointment, finishAppointment } from '@/src/api/appointments';
 import { useAppointments } from '@/src/hooks/useAppointments';
 import { AppointmentDto } from '@/src/types/appointment';
+import { Ionicons } from '@expo/vector-icons';
+import dayjs from 'dayjs';
+import React, { useState } from 'react';
+import { FlatList, RefreshControl } from 'react-native';
+import { Button, Card, ScrollView, Spinner, Text, View, XStack, YStack } from 'tamagui';
 import { EditAppointmentSheet } from './EditAppointmentSheet';
 
 interface ArtistAppointmentsViewProps {
@@ -30,10 +31,30 @@ export default function ArtistAppointmentsView({ artistId, isManager = false }: 
     setIsSheetOpen(true);
   };
 
-  const handleSaveUpdatedAppointment = async (updatedFields: Partial<AppointmentDto>) => {
+const handleSaveUpdatedAppointment = async (updatedFields: Partial<AppointmentDto>) => {
     console.log("Dane do wysłania do API:", updatedFields);
-    // Tu wyślesz mutację: mutate(updatedFields);
-    setIsSheetOpen(false);
+    
+    if (!updatedFields.id) return;
+
+    try {
+      await confirmAppointment(updatedFields.id, updatedFields);
+      setIsSheetOpen(false);
+      refetch();
+      
+    } catch (error) {
+      console.error("Błąd podczas zapisywania wizyty:", error);
+      alert("Nie udało się zapisać zmian. Sprawdź połączenie.");
+    }
+  };
+
+const handleFinishAppointment = async (appointmentId: number) => {
+    try {
+      await finishAppointment(appointmentId);
+      refetch();
+    } catch (error) {
+      console.error("Błąd podczas kończenia wizyty:", error);
+      alert("Nie udało się zakończyć wizyty. Sprawdź połączenie.");
+    }
   };
 
   const { data, isLoading, isFetching, refetch } = useAppointments(queryFilters);
@@ -94,7 +115,7 @@ export default function ArtistAppointmentsView({ artistId, isManager = false }: 
             </YStack>
           </YStack>
 
-          {/* Wewnątrz funkcji renderAppointment (Card.Footer) */}
+          {/* Wewnątrz funkcji renderAppointment (Card.Footer)
           <XStack gap="$2">
             {!item.artistId ? (
               // Jeśli nieprzypisane: Artystka widzi "Przyjmij", Manager widzi "Przypisz / Edytuj"
@@ -123,6 +144,60 @@ export default function ArtistAppointmentsView({ artistId, isManager = false }: 
                 >
                   <Text color="#FF2A85" fontWeight="bold">Edytuj / Status</Text>
                 </Button>
+              ) : (
+                <View flex={1} alignItems="center" paddingVertical="$2" backgroundColor="$gray3" borderRadius="$4">
+                  <Text color="$gray10" fontSize="$2">Przypisane do innego artysty</Text>
+                </View>
+              )
+            )}
+          </XStack> */}
+          {/* Wewnątrz funkcji renderAppointment (Card.Footer) */}
+          <XStack gap="$2">
+            {!item.artistId ? (
+              // Jeśli nieprzypisane: Artystka widzi "Przyjmij", Manager widzi "Przypisz / Edytuj"
+              <Button
+                flex={1}
+                backgroundColor="#FF2A85"
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handleEditPress(item);
+                }}
+              >
+                {isManager ? "Przypisz / Edytuj" : "Przyjmij"}
+              </Button>
+            ) : (
+              // Jeśli przypisane: Manager edytuje wszystko, Artystka tylko swoje
+              (item.artistId === artistId || isManager) ? (
+                // DODANE: Rozdzielamy na dwa przyciski, jeśli wizyta nie jest jeszcze zakończona
+                <XStack flex={1} gap="$2">
+                  {/* Przycisk Zakończ (Zazwyczaj zielony lub inny wyróżniający się kolor) */}
+                  {item.status !== 'Completed' && item.status !== 'Cancelled' && (
+                     <Button
+                       flex={1}
+                       backgroundColor="#38B2AC" // Przykładowy zielony/turkusowy kolor dla akcji "Zakończ"
+                       onPress={(e) => {
+                         e.stopPropagation();
+                         handleFinishAppointment(item.id);
+                       }}
+                     >
+                       <Text color="white" fontWeight="bold">Zakończ</Text>
+                     </Button>
+                  )}
+                  
+                  {/* Istniejący Przycisk Edycji */}
+                  <Button
+                    flex={1}
+                    backgroundColor="transparent"
+                    borderWidth={1}
+                    borderColor="#FF2A85"
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      handleEditPress(item);
+                    }}
+                  >
+                    <Text color="#FF2A85" fontWeight="bold">Edytuj</Text>
+                  </Button>
+                </XStack>
               ) : (
                 <View flex={1} alignItems="center" paddingVertical="$2" backgroundColor="$gray3" borderRadius="$4">
                   <Text color="$gray10" fontSize="$2">Przypisane do innego artysty</Text>

@@ -20,7 +20,25 @@ namespace Application.Features.Appointments.Commands.ConfirmAppointment
             if (appointment is null)
                 throw new NotFoundException(typeof(Appointment).Name, request.AppointmentId);
 
-            appointment.ConfirmWithModifications(request.From, request.To, request.Service, request.NailSize, request.Variant, request.Addons, request.AdditionalNotesArtist);
+            List<Addon>? newAddons = null;
+            if (request.AddonIds != null && request.AddonIds.Any())
+            {
+                newAddons = await _appointmentRepository.GetAddonsAsync(request.AddonIds);
+            }
+
+            // Wywołujemy zaktualizowaną metodę na encji
+            appointment.ConfirmWithModifications(
+                request.From,
+                request.To,
+                request.ArtistId,
+                request.ServiceId,
+                request.NailSize,
+                request.VariantId,
+                newAddons,
+                request.AdditionalNotesArtist
+            //request.TotalPrice,
+            //request.TotalDurationInMinutes
+            );
 
             await _appointmentRepository.SaveChangesAsync(cancellationToken);
         }

@@ -1,10 +1,12 @@
-﻿using Domain.Entities.Common;
+﻿//using Domain.Entities;
+//using Domain.Entities.Common;
 
-namespace Domain.Interfaces.Repositories
-{
-    public interface IArtistRepository
-    {
-        Task<bool> IsArtistAvailableAsync(int artistId, DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
-        Task<bool> IsAnyAvailableAsync(DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
-    }
-}
+//namespace Domain.Interfaces.Repositories
+//{
+//    public interface IUserRepository
+//    {
+//        Task<bool> IsArtistAvailableAsync(int artistId, DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
+//        Task<bool> IsAnyAvailableAsync(DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
+//        Task<User> GetManager(CancellationToken cancellationToken = default);
+//    }
+//}
