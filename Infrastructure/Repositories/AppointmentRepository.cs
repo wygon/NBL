@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
         {
             IQueryable<Addon> query = _context.Addons;
 
-            if (ids.Any()) query = query.Where(a => ids.Contains(a.Id));
+            if (ids is { Count: > 0 }) query = query.Where(a => ids.Contains(a.Id));
 
             return await query.ToListAsync(ct);
         }

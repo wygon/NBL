@@ -15,36 +15,47 @@ namespace Infrastructure.Persistence.Seeder
             if (_context.Appointments.Any()) return;
             if (!IsDevelopment) return;
 
-            var random = new Random();
             var users = _context.Users.ToList();
             var services = _context.Services.ToList();
-            var addons = _context.Addons.ToList();
             var variants = _context.Variants.ToList();
+
+            if (!users.Any() || !services.Any())
+            {
+                Console.WriteLine("Skonfiguruj najpierw Seeder dla User i Service!");
+                return;
+            }
+
+            var staff = users.Where(u => u.Role == Domain.Enums.UserRole.Artist ||
+                                         u.Role == Domain.Enums.UserRole.Manager).ToList();
+
+            var availableArtists = staff.Any() ? staff : users;
 
             var appointmentFaker = new Faker<Appointment>()
                 .CustomInstantiator(f =>
                 {
-                    var artist = users[0]; // Admin jako artysta
-                    var customer = f.PickRandom(users.Skip(1));
+                    var artist = f.PickRandom(availableArtists);
+                    var customer = f.PickRandom(users);
                     var service = f.PickRandom(services);
 
-                    // Używamy metody fabrycznej, którą stworzyliśmy
+                    var start = DateTime.UtcNow.AddDays(f.Random.Int(1, 10));
+                    var end = start.AddHours(2);
+
                     var app = Appointment.RequestAppointment(
                         artist.Id,
                         customer.Id,
                         new List<DateTimeFromTo> {
-                            new DateTimeFromTo(DateTime.UtcNow.AddDays(f.Random.Int(1, 10)), DateTime.UtcNow.AddDays(11))
+                    new DateTimeFromTo(start, end)
                         },
                         service,
                         f.PickRandom<Domain.Enums.NailSize>(),
-                        f.PickRandom(variants),
-                        f.PickRandom(addons, 2), // Wybierz 2 losowe dodatki
+                        variants.Any() ? f.PickRandom(variants) : null,
+                        _context.Addons.Take(2).ToList(),
                         f.Lorem.Sentence()
                     );
                     return app;
                 });
 
-            var appointments = appointmentFaker.Generate(5);
+            var appointments = appointmentFaker.Generate(20);
             _context.Appointments.AddRange(appointments);
 
             await _context.SaveChangesAsync();

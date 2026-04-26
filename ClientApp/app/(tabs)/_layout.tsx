@@ -1,11 +1,14 @@
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useNotifications } from '@/src/hooks/useNotifications';
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AppBar } from '../../components/AppBar';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { data: notifications } = useNotifications();
+  const unreadCount = notifications?.filter(n => !n.isRead).length;
 
   return (
     <Tabs
@@ -45,9 +48,20 @@ export default function TabLayout() {
         name="notifications"
         options={{
           title: 'Powiadomienia',
-          tabBarBadge: 3,
+          // 3. Dynamiczny Badge
+          // Jeśli unreadCount jest większe od 0, pokaż liczbę. Jeśli 0 lub undefined, ukryj badge (undefined).
+          tabBarBadge: unreadCount && unreadCount > 0 ? unreadCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: '#FF2A85',
+            color: 'white',
+            fontSize: 10,
+          },
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" size={size} color={color} />
+            <Ionicons
+              name={unreadCount && unreadCount > 0 ? "notifications" : "notifications-outline"}
+              size={size}
+              color={color}
+            />
           )
         }}
       />

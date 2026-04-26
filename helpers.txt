@@ -1,3 +1,32 @@
 Mirgrate command:
 dotnet ef migrations add {NAME} -s Web.Api -p Infrastructure
 dotnet ef database update --project Infrastructure --startup-project Web.Api
+
+=============================
+najwazniejsze dokcker:
+
+docker-compose down -v
+docker-compose up --build
+
+=============================
+Odpalenie wszystkiego
+docker-compose up -d
+
+	up buduje (jeśli trzeba) i uruchamia kontenery.
+
+-d (detached) odpala je w tle, więc możesz dalej używać tego samego terminala.
+
+	docker-compose up --build
+
+Użyj tego, jeśli zmieniłeś coś w kodzie C# lub w Dockerfile i chcesz wymusić ponowne zbudowanie obrazu API.
+
+
+delete
+# 1. Zatrzymuje kontenery i usuwa wolumeny (-v)
+docker-compose down -v
+
+# 2. Usuwa nieużywane wolumeny, które mogły zostać po starych nazwach projektów
+docker volume prune -f
+
+# 3. Odpala wszystko na świeżo z budowaniem obrazu
+docker-compose up -d --build

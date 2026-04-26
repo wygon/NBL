@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Database;
 
 namespace Infrastructure.Persistence.Seeder
@@ -15,33 +16,68 @@ namespace Infrastructure.Persistence.Seeder
 
         public override async Task SeedAsync()
         {
-            if (_context.Users.Any()) return;
-            List<User> users = new List<User>();
+            List<User> usersToSeed = new List<User>();
 
-            users.Add(new User()
+            if (!_context.Users.Any(u => u.Role == UserRole.User))
             {
-                Name = "Admin",
-                PhoneNumber = "1234567890",
-                InstagramName = "wygon_",
-                PhotoUrl = "",
-                Email = "szymon302.sws@gmail.com"
-            });
+                if (IsDevelopment)
+                {
+                    var userFaker = new Faker<User>()
+                        .RuleFor(u => u.Name, f => f.Person.FirstName)
+                        .RuleFor(u => u.InstagramName, f => f.Internet.UserName())
+                        .RuleFor(u => u.PhoneNumber, f => f.Person.Phone)
+                        .RuleFor(u => u.PhotoUrl, f => f.Internet.Avatar())
+                        .RuleFor(u => u.Email, f => f.Internet.Email())
+                        .RuleFor(u => u.Role, UserRole.User);
 
-            if (!IsDevelopment)
-            {
-                var userFaker = new Faker<User>()
-                    .RuleFor(u => u.Name, f => f.Person.FirstName)
-                    .RuleFor(u => u.InstagramName, f => f.Internet.UserName())
-                    .RuleFor(u => u.PhoneNumber, f => f.Person.Phone)
-                    .RuleFor(u => u.PhotoUrl, f => f.Internet.Avatar())
-                    .RuleFor(u => u.Email, f => f.Internet.Email());
-
-                users.AddRange(userFaker.Generate(10));
+                    usersToSeed.AddRange(userFaker.Generate(10));
+                }
             }
 
-            _context.Users.AddRange(users);
+            if (!_context.Users.Any(u => u.Role == UserRole.Manager))
+            {
+                usersToSeed.Add(new User()
+                {
+                    Name = "Wygon",
+                    PhoneNumber = "1234567890",
+                    InstagramName = "wygon_",
+                    PhotoUrl = "",
+                    Email = "szymon302.sws@gmail.com",
+                    Role = UserRole.Manager
+                });
+            }
 
-            await _context.SaveChangesAsync(default);
+            if (!_context.Users.Any(u => u.Role == UserRole.Artist))
+            {
+                usersToSeed.Add(new User()
+                {
+                    Name = "Zuza",
+                    PhoneNumber = "1234567890",
+                    InstagramName = "nbl_",
+                    PhotoUrl = "",
+                    Email = "x@gmail.com",
+                    Role = UserRole.Artist
+                });
+
+                if (IsDevelopment)
+                {
+                    var artistFaker = new Faker<User>()
+                           .RuleFor(u => u.Name, f => f.Person.FirstName)
+                           .RuleFor(u => u.InstagramName, f => f.Internet.UserName())
+                           .RuleFor(u => u.PhoneNumber, f => f.Person.Phone)
+                           .RuleFor(u => u.PhotoUrl, f => f.Internet.Avatar())
+                           .RuleFor(u => u.Email, f => f.Internet.Email())
+                           .RuleFor(u => u.Role, UserRole.Artist);
+
+                    usersToSeed.AddRange(artistFaker.Generate(3));
+                }
+            }
+
+            if (usersToSeed.Any())
+            {
+                _context.Users.AddRange(usersToSeed);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

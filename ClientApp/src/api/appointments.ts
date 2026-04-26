@@ -13,7 +13,7 @@ export const getBookingData = async () => {
 
 export const updateAppointment = async (appointmentData: Partial<AppointmentDto>) => {
   if (!appointmentData.id) {
-      throw new Error("Appointment ID is required for update.");
+    throw new Error("Appointment ID is required for update.");
   }
 
   const response = await apiClient.put(
@@ -25,10 +25,10 @@ export const updateAppointment = async (appointmentData: Partial<AppointmentDto>
 };
 
 export const confirmAppointment = async (id: number, data: Partial<AppointmentDto>) => {
-  const response = await apiClient.put(`${API_CONFIG.ENDPOINTS.CONFIRM_APPOINTMENT}/${id}`, 
+  const response = await apiClient.put(`${API_CONFIG.ENDPOINTS.CONFIRM_APPOINTMENT}/${id}`,
     data
   );
-  
+
   return response.data;
 };
 

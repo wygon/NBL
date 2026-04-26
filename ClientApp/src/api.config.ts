@@ -7,9 +7,9 @@ const PROD_URL = 'https://api.twojadomena.pl'; // Tu wpiszesz adres serwera prod
 
 const getBaseUrl = () => {
   // Jeśli aplikacja jest w trybie produkcyjnym (zbudowana)
-  if (!__DEV__) {
-    return PROD_URL;
-  }
+  // if (!__DEV__) {
+  //   return PROD_URL;
+  // }
 
   // Jeśli jesteśmy w trybie deweloperskim, rozróżniamy platformy
   return Platform.OS === 'android' ? DEV_URL_ANDROID : DEV_URL_IOS;
@@ -24,6 +24,8 @@ export const API_CONFIG = {
     GET_APPOINTMENTS : '/api/appointments',
     CONFIRM_APPOINTMENT : '/api/appointments/confirm',
     FINISH_APPOINTMENT : (id: number) => `/api/appointments/${id}/finish`,
+    GET_ARTISTS : '/api/users/artists',
+    GET_NOTIFICATIONS : '/api/notifications',
   },
   TIMEOUT: 5000,
 };

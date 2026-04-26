@@ -59,7 +59,15 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 
     IMapper mapper = app.Services.GetRequiredService<IMapper>();
-    mapper.ConfigurationProvider.AssertConfigurationIsValid();
+    try
+    {
+        mapper.ConfigurationProvider.AssertConfigurationIsValid();
+    }
+    catch (AutoMapperConfigurationException ex)
+    {
+        Console.WriteLine(ex.Message);
+        throw;
+    }
 }
 
 app.UseHttpsRedirection();

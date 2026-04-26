@@ -1,6 +1,6 @@
-﻿using Infrastructure.Database;
+﻿using Application.Features.Artists.Queries.GetAllArtitsts;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Web.Api.Controllers;
 
@@ -8,21 +8,22 @@ namespace Web.Api.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IMediator _mediator;
 
-    public UsersController(AppDbContext context)
+    public UsersController(IMediator mediator)
     {
-        _context = context;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        // Pobieramy wszystkich użytkowników z bazy
-        var users = await _context.Users
-            .AsNoTracking() // Dobra praktyka dla zapytań tylko do odczytu
-            .ToListAsync();
+        return Ok();
+    }
 
-        return Ok(users);
+    [HttpGet("artists")]
+    public async Task<IActionResult> GetAllArtists()
+    {
+        return Ok(await _mediator.Send(new GetAllArtistsQuery()));
     }
 }

@@ -1,32 +1,36 @@
-import { Accordion, YStack, Text, Paragraph, Square, ScrollView, XStack } from 'tamagui';
+import { useNotifications } from '@/src/hooks/useNotifications';
 import { Ionicons } from '@expo/vector-icons';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pl';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { Accordion, Circle, Paragraph, ScrollView, Spinner, Square, Text, XStack, YStack } from 'tamagui';
 
-// Przykładowe dane powiadomień
-const NOTIFICATIONS = [
-  {
-    id: '1',
-    title: 'Przypomnienie o wizycie',
-    date: 'Dzisiaj, 12:00',
-    content: 'Przypominamy o Twojej wizycie u Anny Marii jutro o godzinie 14:30. Prosimy o przybycie 5 minut wcześniej.',
-    icon: 'calendar'
-  },
-  {
-    id: '2',
-    title: 'Nowa promocja!',
-    date: 'Wczoraj',
-    content: 'Tylko w tym tygodniu: -20% na wszystkie zdobienia artystyczne przy rezerwacji online!',
-    icon: 'gift'
-  },
-  {
-    id: '3',
-    title: 'Status płatności',
-    date: '2 dni temu',
-    content: 'Twoja przedpłata za wizytę w dniu 25.03 została pomyślnie zaksięgowana. Dziękujemy!',
-    icon: 'checkmark-circle'
-  }
-];
+// Konfiguracja dat
+dayjs.extend(relativeTime);
+dayjs.locale('pl');
 
 export default function NotificationsScreen() {
+  // 1. Pobieramy dane z API
+  const { data: notifications, isLoading, isError } = useNotifications();
+
+  // Obsługa ładowania
+  if (isLoading) {
+    return (
+      <YStack flex={1} justifyContent="center" alignItems="center">
+        <Spinner size="large" color="#FF2A85" />
+      </YStack>
+    );
+  }
+
+  // Obsługa błędu lub braku danych
+  if (isError || !notifications) {
+    return (
+      <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
+        <Text>Nie udało się załadować powiadomień.</Text>
+      </YStack>
+    );
+  }
+
   return (
     <ScrollView backgroundColor="$background">
       <YStack padding="$4" gap="$4">
@@ -34,41 +38,87 @@ export default function NotificationsScreen() {
           Powiadomienia
         </Text>
 
-        {/* Komponent Accordion */}
         <Accordion overflow="hidden" width="100%" type="multiple" gap="$3">
-          {NOTIFICATIONS.map((item) => (
-            <Accordion.Item key={item.id} value={item.id} borderWidth={1} borderColor="$borderColor" borderRadius="$4">
-              
-              {/* NAGŁÓWEK (Trigger) */}
-              <Accordion.Trigger flexDirection="row" justifyContent="space-between" padding="$3" focusStyle={{ backgroundColor: '$backgroundHover' }}>
+          {notifications.map((item) => (
+            <Accordion.Item 
+              key={item.id} 
+              value={item.id.toString()} 
+              borderWidth={1} 
+              // 2. Dynamiczne stylowanie: jeśli nieprzeczytane, obramowanie jest różowe
+              borderColor={item.isRead ? "$borderColor" : "#FF2A85"} 
+              borderRadius="$4"
+            >
+              <Accordion.Trigger 
+                flexDirection="row" 
+                justifyContent="space-between" 
+                padding="$3" 
+                focusStyle={{ backgroundColor: '$backgroundHover' }}
+              >
                 {({ open }: { open: boolean }) => (
                   <XStack gap="$3" alignItems="center" flex={1}>
-                    <Square size="$3" backgroundColor="#FFF0F5" borderRadius="$2">
-                      <Ionicons name={item.icon as any} size={18} color="#FF2A85" />
+                    <Square 
+                      size="$3" 
+                      // 3. Ikona zmienia tło jeśli wiadomość jest nowa
+                      backgroundColor={item.isRead ? "$gray3" : "#FFF0F5"} 
+                      borderRadius="$2"
+                    >
+                      <Ionicons 
+                        // Wybieramy ikonę (możesz dodać logikę ikony na podstawie treści)
+                        name={item.isRead ? "mail-open-outline" : "mail"} 
+                        size={18} 
+                        color="#FF2A85" 
+                      />
                     </Square>
+                    
                     <YStack flex={1}>
-                      <Text fontWeight="bold" color="$color">{item.title}</Text>
-                      <Text fontSize="$2" color="$gray10">{item.date}</Text>
+                      <XStack alignItems="center" gap="$2">
+                        <Text fontWeight="bold" color="$color">{item.title}</Text>
+                        {/* 4. Kropka sygnalizująca nową wiadomość */}
+                        {!item.isRead && <Circle size={8} backgroundColor="#FF2A85" />}
+                      </XStack>
+                      {/* 5. Formatowanie daty na "X minut temu" */}
+                      <Text fontSize="$2" color="$gray10">
+                        {dayjs(item.created).fromNow()}
+                      </Text>
                     </YStack>
+
                     <Ionicons 
-                        name={open ? "chevron-up" : "chevron-down"} 
-                        size={16} 
-                        color="$gray10" 
+                      name={open ? "chevron-up" : "chevron-down"} 
+                      size={16} 
+                      color="$gray10" 
                     />
                   </XStack>
                 )}
               </Accordion.Trigger>
 
-              {/* TREŚĆ (Content) */}
               <Accordion.Content backgroundColor="$background" padding="$3" borderTopWidth={1} borderTopColor="$borderColor">
                 <Paragraph color="$color" fontSize="$3">
-                  {item.content}
+                  {/* Mapujemy Message z Twojego Entity */}
+                  {item.message}
                 </Paragraph>
+                
+                {item.redirectUrl && (
+                    <Text 
+                      marginTop="$2" 
+                      color="#FF2A85" 
+                      fontWeight="bold" 
+                      fontSize="$2"
+                    >
+                      Kliknij, aby przejść do szczegółów →
+                    </Text>
+                )}
               </Accordion.Content>
-              
             </Accordion.Item>
           ))}
         </Accordion>
+
+        {/* Jeśli lista jest pusta */}
+        {notifications.length === 0 && (
+          <YStack alignItems="center" marginTop="$10" opacity={0.5}>
+            <Ionicons name="notifications-off-outline" size={48} color="$gray10" />
+            <Text marginTop="$2">Brak powiadomień</Text>
+          </YStack>
+        )}
       </YStack>
     </ScrollView>
   );
