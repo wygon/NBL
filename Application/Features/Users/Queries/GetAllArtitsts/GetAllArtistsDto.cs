@@ -4,6 +4,6 @@ namespace Application.Features.Artists.Queries.GetAllArtitsts
 {
     public record GetAllArtistsDto
     {
-        public List<ArtistDto> Artists { get; init; }
+        public List<UserDto> Artists { get; init; }
     }
 }

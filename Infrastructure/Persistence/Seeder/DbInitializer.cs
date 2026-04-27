@@ -23,8 +23,6 @@ namespace Infrastructure.Persistence.Seeder
                 seeder.IsDevelopment = isDevelopment;
                 await seeder.SeedAsync();
             }
-
-            //await context.SaveChangesAsync(default);
         }
     }
 }

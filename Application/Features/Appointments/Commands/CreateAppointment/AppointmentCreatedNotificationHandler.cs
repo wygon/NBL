@@ -26,12 +26,12 @@ namespace Application.Features.Appointments.Commands.CreateAppointment
 
                 if (manager is null) return;
 
-                Notification managerNotification = new Notification(manager.Id, "Nowa prośba o wizytę!", $"Użytkownik {appointment.Customer.Name} złożył prośbę o wizytę ({appointment.Service.Name}) na {appointment.RequestedDates?.FirstOrDefault()?.From:dd.MM HH:mm}.", appointment.Id.ToString());
+                Notification managerNotification = new Notification(manager.Id, "Nowa prośba o wizytę!", $"Użytkownik {appointment.Customer?.Name ?? "Brak nazwy"} złożył prośbę o wizytę ({appointment.Service.Name}) na {appointment.RequestedDates?.FirstOrDefault()?.From:dd.MM HH:mm}.", appointment.Id.ToString());
                 await _notificationRepository.AddAsync(managerNotification, cancellationToken);
             }
             else
             {
-                Notification artistNotification = new Notification(appointment.ArtistId.Value, "Wizyta potwierdzona!", $"Potwierdziłeś wizytę ({appointment.Service.Name}) dla klienta {appointment.Customer.Name} na {appointment.From:dd.MM HH:mm}.", appointment.Id.ToString());
+                Notification artistNotification = new Notification(appointment.ArtistId.Value, "Wizyta potwierdzona!", $"Potwierdziłeś wizytę ({appointment.Service.Name}) dla klienta {appointment.Customer?.Name ?? "Brak nazwy"} na {appointment.From:dd.MM HH:mm}.", appointment.Id.ToString());
                 await _notificationRepository.AddAsync(artistNotification, cancellationToken);
             }
 

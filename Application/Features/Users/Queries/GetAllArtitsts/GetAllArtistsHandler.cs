@@ -21,7 +21,7 @@ namespace Application.Features.Artists.Queries.GetAllArtitsts
             List<User> artists = await _userRepository.GetAllArtistsAsync(cancellationToken);
             return new GetAllArtistsDto()
             {
-                Artists = _mapper.Map<List<ArtistDto>>(artists)
+                Artists = _mapper.Map<List<UserDto>>(artists)
             };
         }
     }

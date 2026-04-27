@@ -2,7 +2,7 @@
 
 namespace Application.Features.Users
 {
-    public record ArtistDto
+    public record UserDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

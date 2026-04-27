@@ -15,6 +15,7 @@ namespace Infrastructure.Repositories
             //    .Where(n => n.UserId == userId)
             //    .ToListAsync(cancellationToken);
             return await _context.Notifications
+                .OrderByDescending(n => n.CreatedDate)
                 .ToListAsync(cancellationToken);
         }
     }

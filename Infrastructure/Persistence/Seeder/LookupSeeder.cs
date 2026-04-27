@@ -10,7 +10,6 @@ namespace Infrastructure.Persistence.Seeder
 
         public override async Task SeedAsync()
         {
-            // Dodatki (NailAddon)
             if (_context.Addons.Any()) return;
 
             if (!_context.Addons.Any())
@@ -33,7 +32,6 @@ namespace Infrastructure.Persistence.Seeder
                 }
             }
 
-            // Formy (NailForm)
             if (!_context.Variants.Any())
             {
                 _context.Variants.AddRange(new List<Variant>

@@ -30,7 +30,7 @@ namespace Infrastructure.Persistence.Seeder
                         .RuleFor(u => u.Email, f => f.Internet.Email())
                         .RuleFor(u => u.Role, UserRole.User);
 
-                    usersToSeed.AddRange(userFaker.Generate(10));
+                    usersToSeed.AddRange(userFaker.Generate(2));
                 }
             }
 
@@ -69,7 +69,7 @@ namespace Infrastructure.Persistence.Seeder
                            .RuleFor(u => u.Email, f => f.Internet.Email())
                            .RuleFor(u => u.Role, UserRole.Artist);
 
-                    usersToSeed.AddRange(artistFaker.Generate(3));
+                    usersToSeed.AddRange(artistFaker.Generate(0));
                 }
             }
 

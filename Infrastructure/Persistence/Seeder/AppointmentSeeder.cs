@@ -28,13 +28,15 @@ namespace Infrastructure.Persistence.Seeder
             var staff = users.Where(u => u.Role == Domain.Enums.UserRole.Artist ||
                                          u.Role == Domain.Enums.UserRole.Manager).ToList();
 
+            var customers = users.Where(u => u.Role == Domain.Enums.UserRole.User).ToList();
+
             var availableArtists = staff.Any() ? staff : users;
 
             var appointmentFaker = new Faker<Appointment>()
                 .CustomInstantiator(f =>
                 {
                     var artist = f.PickRandom(availableArtists);
-                    var customer = f.PickRandom(users);
+                    var customer = f.PickRandom(customers);
                     var service = f.PickRandom(services);
 
                     var start = DateTime.UtcNow.AddDays(f.Random.Int(1, 10));
@@ -55,7 +57,7 @@ namespace Infrastructure.Persistence.Seeder
                     return app;
                 });
 
-            var appointments = appointmentFaker.Generate(20);
+            var appointments = appointmentFaker.Generate(5);
             _context.Appointments.AddRange(appointments);
 
             await _context.SaveChangesAsync();

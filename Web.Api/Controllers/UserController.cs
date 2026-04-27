@@ -1,4 +1,5 @@
 ﻿using Application.Features.Artists.Queries.GetAllArtitsts;
+using Application.Features.Users.Queries.GetAllUsers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +16,16 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        return Ok();
-    }
-
     [HttpGet("artists")]
     public async Task<IActionResult> GetAllArtists()
     {
         return Ok(await _mediator.Send(new GetAllArtistsQuery()));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _mediator.Send(new GetAllUsersQuery()));
+    }
+
 }

@@ -2,7 +2,6 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useNotifications } from '@/src/hooks/useNotifications';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
 import { AppBar } from '../../components/AppBar';
 
 export default function TabLayout() {

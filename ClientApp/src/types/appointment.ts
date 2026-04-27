@@ -20,6 +20,7 @@ export interface AddonDto {
 export interface AppointmentDto {
   id: number;
   artistId: number | null;
+  artistName: string | null;
   status: string;
   from: string | null;
   to: string | null;

@@ -8,7 +8,7 @@ namespace Application.Common.Mappings
     {
         public UserMappingProfile()
         {
-            CreateMap<User, ArtistDto>()
+            CreateMap<User, UserDto>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.PhotoUrl ?? ""))
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }

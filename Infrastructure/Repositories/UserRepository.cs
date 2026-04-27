@@ -26,16 +26,16 @@ namespace Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Role == UserRole.Manager, cancellationToken);
         }
 
-        public Task UpdateUser(User user)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<User>> GetAllArtistsAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Users
                 .Where(u => u.Role == UserRole.Artist || u.Role == UserRole.Manager)
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<User?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Name == name, cancellationToken);
         }
     }
 }

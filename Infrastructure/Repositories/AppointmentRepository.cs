@@ -64,6 +64,7 @@ namespace Infrastructure.Repositories
 
             List<Appointment> appointments = await query
                 .Include(x => x.Customer)
+                .Include(x => x.Artist)
                 .Include(x => x.Service)
                 .Include(x => x.Variant)
                 .Include(x => x.Addons)

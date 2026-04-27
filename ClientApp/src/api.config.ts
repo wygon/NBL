@@ -26,6 +26,8 @@ export const API_CONFIG = {
     FINISH_APPOINTMENT : (id: number) => `/api/appointments/${id}/finish`,
     GET_ARTISTS : '/api/users/artists',
     GET_NOTIFICATIONS : '/api/notifications',
+    POST_AUTH_LOGIN : '/api/auth/login',
+    GET_USERS : '/api/users',
   },
   TIMEOUT: 5000,
 };

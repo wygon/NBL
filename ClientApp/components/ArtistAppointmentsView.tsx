@@ -1,5 +1,5 @@
-// src/components/ArtistAppointmentsView.tsx
 import { confirmAppointment, finishAppointment } from '@/src/api/appointments';
+import { useAuth } from '@/src/contexts/AuthContext';
 import { useAppointments } from '@/src/hooks/useAppointments';
 import { AppointmentDto } from '@/src/types/appointment';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,12 +9,11 @@ import { FlatList, RefreshControl } from 'react-native';
 import { Button, Card, ScrollView, Spinner, Text, View, XStack, YStack } from 'tamagui';
 import { EditAppointmentSheet } from './EditAppointmentSheet';
 
-interface ArtistAppointmentsViewProps {
-  artistId: number;
-  isManager?: boolean;
-}
+export default function ArtistAppointmentsView() {
+  const { user, isManager } = useAuth();
+  
+  const artistId = user?.id || 0;
 
-export default function ArtistAppointmentsView({ artistId, isManager = false }: ArtistAppointmentsViewProps) {
   const [filterMode, setFilterMode] = useState<'all' | 'mine' | 'unassigned' | 'all_artists'>('mine');
   const [selectedForEdit, setSelectedForEdit] = useState<AppointmentDto | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -31,8 +30,8 @@ export default function ArtistAppointmentsView({ artistId, isManager = false }: 
     setIsSheetOpen(true);
   };
 
-const handleSaveUpdatedAppointment = async (updatedFields: Partial<AppointmentDto>) => {
-    console.log("Dane do wysłania do API:", updatedFields);
+  const handleSaveUpdatedAppointment = async (updatedFields: Partial<AppointmentDto>) => {
+    if(!isManager) updatedFields.artistId = artistId;
     
     if (!updatedFields.id) return;
 
@@ -40,14 +39,13 @@ const handleSaveUpdatedAppointment = async (updatedFields: Partial<AppointmentDt
       await confirmAppointment(updatedFields.id, updatedFields);
       setIsSheetOpen(false);
       refetch();
-      
     } catch (error) {
       console.error("Błąd podczas zapisywania wizyty:", error);
       alert("Nie udało się zapisać zmian. Sprawdź połączenie.");
     }
   };
 
-const handleFinishAppointment = async (appointmentId: number) => {
+  const handleFinishAppointment = async (appointmentId: number) => {
     try {
       await finishAppointment(appointmentId);
       refetch();
@@ -75,7 +73,7 @@ const handleFinishAppointment = async (appointmentId: number) => {
         <Card.Header padding="$4" paddingBottom="$2">
           <XStack justifyContent="space-between" alignItems="center">
             <YStack>
-              <Text fontSize="$3" color="$gray10">Klient: {item.customerName || 'Anonim'}</Text>
+              <Text fontSize="$3" color="$gray10">Klient: {item.customerName || 'Anonim'} {isManager && item.artistId != user?.id ? `Artysta:` +  item.artistName : ""}</Text>
               <Text fontWeight="bold" fontSize="$5">
                 {item.service?.name} {item.variant ? `(${item.variant.name})` : ''}
               </Text>
@@ -96,7 +94,6 @@ const handleFinishAppointment = async (appointmentId: number) => {
         </Card.Header>
 
         <Card.Footer flexDirection="column" gap="$3" marginTop="$2" paddingHorizontal="$4" paddingBottom="$4">
-          {/* Wyświetlanie wybranych dat (requested) na karcie */}
           <YStack gap="$1">
             <Text fontSize="$2" color="$gray10">Prośby o termin:</Text>
             <YStack gap="$1">
@@ -115,10 +112,8 @@ const handleFinishAppointment = async (appointmentId: number) => {
             </YStack>
           </YStack>
 
-          {/* Wewnątrz funkcji renderAppointment (Card.Footer)
           <XStack gap="$2">
             {!item.artistId ? (
-              // Jeśli nieprzypisane: Artystka widzi "Przyjmij", Manager widzi "Przypisz / Edytuj"
               <Button
                 flex={1}
                 backgroundColor="#FF2A85"
@@ -130,51 +125,12 @@ const handleFinishAppointment = async (appointmentId: number) => {
                 {isManager ? "Przypisz / Edytuj" : "Przyjmij"}
               </Button>
             ) : (
-              // Jeśli przypisane: Manager edytuje wszystko, Artystka tylko swoje
               (item.artistId === artistId || isManager) ? (
-                <Button
-                  flex={1}
-                  backgroundColor="transparent"
-                  borderWidth={1}
-                  borderColor="#FF2A85"
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    handleEditPress(item);
-                  }}
-                >
-                  <Text color="#FF2A85" fontWeight="bold">Edytuj / Status</Text>
-                </Button>
-              ) : (
-                <View flex={1} alignItems="center" paddingVertical="$2" backgroundColor="$gray3" borderRadius="$4">
-                  <Text color="$gray10" fontSize="$2">Przypisane do innego artysty</Text>
-                </View>
-              )
-            )}
-          </XStack> */}
-          {/* Wewnątrz funkcji renderAppointment (Card.Footer) */}
-          <XStack gap="$2">
-            {!item.artistId ? (
-              // Jeśli nieprzypisane: Artystka widzi "Przyjmij", Manager widzi "Przypisz / Edytuj"
-              <Button
-                flex={1}
-                backgroundColor="#FF2A85"
-                onPress={(e) => {
-                  e.stopPropagation();
-                  handleEditPress(item);
-                }}
-              >
-                {isManager ? "Przypisz / Edytuj" : "Przyjmij"}
-              </Button>
-            ) : (
-              // Jeśli przypisane: Manager edytuje wszystko, Artystka tylko swoje
-              (item.artistId === artistId || isManager) ? (
-                // DODANE: Rozdzielamy na dwa przyciski, jeśli wizyta nie jest jeszcze zakończona
                 <XStack flex={1} gap="$2">
-                  {/* Przycisk Zakończ (Zazwyczaj zielony lub inny wyróżniający się kolor) */}
                   {item.status !== 'Completed' && item.status !== 'Cancelled' && (
                      <Button
                        flex={1}
-                       backgroundColor="#38B2AC" // Przykładowy zielony/turkusowy kolor dla akcji "Zakończ"
+                       backgroundColor="#38B2AC"
                        onPress={(e) => {
                          e.stopPropagation();
                          handleFinishAppointment(item.id);
@@ -184,7 +140,6 @@ const handleFinishAppointment = async (appointmentId: number) => {
                      </Button>
                   )}
                   
-                  {/* Istniejący Przycisk Edycji */}
                   <Button
                     flex={1}
                     backgroundColor="transparent"
@@ -206,16 +161,15 @@ const handleFinishAppointment = async (appointmentId: number) => {
             )}
           </XStack>
         </Card.Footer>
-      </Card >
+      </Card>
     );
   };
 
   return (
     <YStack flex={1} padding="$4" backgroundColor="$background">
-      <Text fontSize="$6" fontWeight="bold" marginBottom="$4">Panel Stylistki</Text>
+      <Text fontSize="$6" fontWeight="bold" marginBottom="$4">Panel {isManager ? 'Managera' : 'Stylistki'}</Text>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} marginBottom="$4">
-        {/* DODANO paddingBottom i paddingHorizontal aby przyciski miały miejsce na obramowanie/cień */}
         <XStack gap="$2" paddingBottom="$2" paddingHorizontal="$1">
           {isManager && (
             <Button
@@ -250,13 +204,12 @@ const handleFinishAppointment = async (appointmentId: number) => {
         />
       )}
 
-      {/* MODAL / SHEET EDYCJI */}
       <EditAppointmentSheet
         appointment={selectedForEdit}
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
         onSaveAndAccept={handleSaveUpdatedAppointment}
-        isManager={isManager} // PRZEKAŻ TUTAJ!
+        isManager={isManager} 
       />
     </YStack>
   );

@@ -1,7 +1,7 @@
-import React from 'react';
-import { YStack, Text, Button, H2, Circle } from 'tamagui';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
+import { Button, Circle, H2, Text, YStack } from 'tamagui';
 
 export default function SuccessScreen() {
   const router = useRouter();

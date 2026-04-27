@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
 
         public virtual async Task<List<T>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
+            return await _dbSet.ToListAsync(cancellationToken);
         }
 
         public virtual async Task<List<T>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken)

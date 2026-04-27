@@ -18,7 +18,6 @@ namespace Infrastructure.Persistence.Seeder
             _context.ServiceCategories.AddRange(catNails, catPedicure);
             await _context.SaveChangesAsync();
 
-            // 2. Tworzymy Usługi przypisane do kategorii
             var services = new List<Service>
             {
                 new Service("Manicure Hybrydowy", "Klasyczna hybryda", 120, 90, catNails.Id),

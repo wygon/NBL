@@ -8,6 +8,7 @@ namespace Application.Features.Appointments
     {
         public required int Id { get; init; }
         public int? ArtistId { get; init; }
+        public string ArtistName { get; init; }
         public List<DateTimeFromTo>? RequestedDates { get; init; }
         public required string Status { get; init; }
         public DateTime? From { get; init; } = null;

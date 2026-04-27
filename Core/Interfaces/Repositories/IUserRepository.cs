@@ -9,5 +9,6 @@ namespace Domain.Interfaces.Repositories
         Task<bool> IsAnyAvailableAsync(DateTimeFromTo fromTo, CancellationToken cancellationToken = default);
         Task<User> GetManager(CancellationToken cancellationToken = default);
         Task<List<User>> GetAllArtistsAsync(CancellationToken cancellationToken = default);
+        Task<User> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     }
 }
