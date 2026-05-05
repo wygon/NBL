@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-
-namespace Domain.Entities.Statuses
+﻿namespace Domain.Entities.Statuses
 {
     public abstract class AppointmentStatus
     {

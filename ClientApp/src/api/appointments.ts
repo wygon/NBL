@@ -36,3 +36,8 @@ export const finishAppointment = async (id: number) => {
   const response = await apiClient.put(API_CONFIG.ENDPOINTS.FINISH_APPOINTMENT(id));
   return response.data;
 };
+
+export const takeAppointment = async (appointmentId: number) => {
+  const response = await apiClient.put(API_CONFIG.ENDPOINTS.TAKE_APPOINTMENT(appointmentId));
+  return response.data;
+};

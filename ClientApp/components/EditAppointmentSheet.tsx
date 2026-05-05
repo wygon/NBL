@@ -204,18 +204,30 @@ export function EditAppointmentSheet({
             {/* SEKTA PROPOZYCJI KLIENTA */}
             {appointment.requestedDates && appointment.requestedDates.length > 0 && (
               <YStack backgroundColor="$gray2" padding="$3" borderRadius="$3" gap="$2">
-                <Text fontSize="$2" fontWeight="bold" color="$gray11">Klient prosił o (proponowane zakresy):</Text>
-                <YStack gap="$1.5">
+                <Text fontSize="$2" fontWeight="bold" color="$gray11">Klient prosił o (kliknij, aby wstawić do formularza):</Text>
+                <YStack gap="$2">
                   {appointment.requestedDates.map((rd, i) => (
-                    <XStack key={i} alignItems="center" gap="$2">
-                      <Ionicons name="calendar-outline" size={14} color="#FF2A85" />
-                      <Text fontSize="$3" color="#FF2A85" fontWeight="bold">
+                    <Button
+                      key={i}
+                      size="$3"
+                      variant="outlined"
+                      borderColor="#FF2A85"
+                      backgroundColor="transparent"
+                      justifyContent="flex-start"
+                      onPress={() => {
+                        // Automatyczne wypełnianie formularza po kliknięciu!
+                        setDate(dayjs(rd.from).format('DD.MM.YYYY'));
+                        setTime(dayjs(rd.from).format('HH:mm'));
+                      }}
+                    >
+                      <Ionicons name="calendar-outline" size={16} color="#FF2A85" />
+                      <Text fontSize="$3" color="#FF2A85" fontWeight="bold" marginLeft="$2">
                         {dayjs(rd.from).format('DD.MM')}
                       </Text>
                       <Text fontSize="$3" color="$color">
-                        w godzinach: {dayjs(rd.from).format('HH:mm')} – {dayjs(rd.to).format('HH:mm')}
+                        | {dayjs(rd.from).format('HH:mm')} – {dayjs(rd.to).format('HH:mm')}
                       </Text>
-                    </XStack>
+                    </Button>
                   ))}
                 </YStack>
               </YStack>

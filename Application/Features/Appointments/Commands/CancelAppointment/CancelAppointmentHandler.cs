@@ -1,5 +1,5 @@
-﻿using Application.Common.Interfaces;
-using Domain.Constants;
+﻿using Application.Common.Extensions;
+using Application.Common.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces.Repositories;
@@ -29,7 +29,7 @@ namespace Application.Features.Appointments.Commands.CancelConfirmedAppointment
             if (appointment is null)
                 throw new NotFoundException(typeof(Appointment).Name, request.Id);
 
-            if (!_identity.IsAdmin && !await _identity.AuthorizeAsync(Policies.CanManageAppointments) && appointment.CustomerId != _identity.UserId)
+            if (!await _identity.CanAccessAppointment(appointment))
                 throw new ForbiddenAccessException("Nie masz uprawnień do anulowania tej wizyty");
 
             appointment.Cancel();

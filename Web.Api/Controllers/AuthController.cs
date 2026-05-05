@@ -1,7 +1,6 @@
-﻿using Application.Features.Authorization.Commands.Login;
-using Application.Features.Users;
+﻿using Application.Features.Authorization;
+using Application.Features.Authorization.Commands.Login;
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,27 +17,25 @@ namespace Web.Api.Controllers
             _mediator = mediator;
         }
 
-        public IActionResult Login()
-        {
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "Instagram");
-        }
-
-        [Authorize]
-        public IActionResult Profile()
-        {
-            // Tutaj wyciągasz ID Instagrama, by znaleźć usera w swojej bazie
-            var instagramId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            // Jeśli nie masz go w bazie -> stwórz nowy rekord "User" z tym ID
-            // Jeśli masz -> zwróć jego dane
-            return Ok(instagramId);
-        }
-
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login([FromBody] LoginCommand command)
+        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("test-auth")]
+        public IActionResult TestAuth()
+        {
+            var user = HttpContext.User;
+            return Ok(new
+            {
+                IsAuthenticated = user.Identity?.IsAuthenticated,
+                Name = user.Identity?.Name,
+                Claims = user.Claims.Select(c => new { c.Type, c.Value }).ToList(),
+                Role = user.FindFirstValue(ClaimTypes.Role)
+            });
         }
     }
 }

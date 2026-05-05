@@ -15,24 +15,29 @@ namespace Web.Api.Services
             _authorizationService = authorizationService;
         }
 
-        //TODO: weryfikacja
-        //VERIFY
         public int UserId
         {
             get
             {
-                // Wyciągamy ID z tokena (zazwyczaj zapisane pod NameIdentifier)
-                var idClaim = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = _httpContextAccessor.HttpContext?.User;
+
+                // 1. Sprawdzamy, czy request w ogóle przeszedł przez autoryzację
+                if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
+                {
+                    return 0;
+                    throw new UnauthorizedAccessException("Próba pobrania UserId z niezalogowanego żądania. Dodaj [Authorize] do kontrolera!");
+                }
+
+                // 2. Skoro jest zalogowany, szukamy ID
+                var idClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (int.TryParse(idClaim, out int userId))
                 {
                     return userId;
                 }
 
-                // Jeśli ktoś ma token, ale nie ma w nim ID, to coś jest grubo nie tak z konfiguracją JWT
-                //throw new UnauthorizedAccessException("Brak identyfikatora użytkownika w tokenie.");
-
-                return 1;
+                return 0;
+                throw new UnauthorizedAccessException("Token jest poprawny, ale nie zawiera claima NameIdentifier.");
             }
         }
 
@@ -52,9 +57,9 @@ namespace Web.Api.Services
         public async Task<bool> AuthorizeAsync(string policyName)
         {
             var user = _httpContextAccessor.HttpContext?.User;
+
             if (user == null) return false;
 
-            // Tutaj dzieje się magia: silnik sprawdza wszystkie wymagania polityki
             var result = await _authorizationService.AuthorizeAsync(user, policyName);
 
             return result.Succeeded;

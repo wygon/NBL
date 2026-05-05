@@ -13,12 +13,12 @@ namespace Application.Persistence.Factories
             { nameof(CompletedStatus), () => new CompletedStatus() }
         };
 
-        public static AppointmentStatus Create(string typeName)
+        public static AppointmentStatus? Create(string typeName)
         {
             if (string.IsNullOrWhiteSpace(typeName))
                 return null;
 
-            var fullTypeName = typeName.EndsWith("Status") ? typeName : typeName + "Status";
+            string fullTypeName = typeName.EndsWith("Status") ? typeName : typeName + "Status";
 
             if (_statuses.TryGetValue(fullTypeName, out var factory))
             {

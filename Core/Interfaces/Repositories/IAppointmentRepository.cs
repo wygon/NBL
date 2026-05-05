@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories
 {
-    public interface IAppointmentRepository
+    public interface IAppointmentRepository : IBaseRepository<Appointment>
     {
         Task AddAppointment(Appointment appointment);
         Task<Appointment> GetAppointmentAsync(int id, CancellationToken cancellationToken = default);

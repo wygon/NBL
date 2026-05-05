@@ -1,11 +1,16 @@
-﻿using Domain.Interfaces.Repositories;
+﻿using Application.Common.Interfaces;
+using Domain.Interfaces.Repositories;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Database;
 using Infrastructure.Identity;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Infrastructure
 {
@@ -19,11 +24,11 @@ namespace Infrastructure
 
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            //services.AddScoped<IUserRepository, ArtistRepository>();
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IVariantRepository, VariantRepository>();
             services.AddScoped<IAddonRepository, AddonRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<ITokenService, JwtTokenService>();
 
             //builder.Services.AddAuthentication(options =>
             //{
@@ -37,6 +42,25 @@ namespace Infrastructure
             //    options.ClientSecret = builder.Configuration["Instagram:ClientSecret"];
             //    options.SaveTokens = true; // Zapisze AccessToken Instagrama w Claimsach
             //});
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = config["JwtSettings:Issuer"],
+                    ValidAudience = config["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Secret"]!))
+                };
+            });
 
             services.AddAppAuthorization();
 

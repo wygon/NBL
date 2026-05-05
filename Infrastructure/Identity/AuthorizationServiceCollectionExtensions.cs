@@ -16,10 +16,10 @@ public static class AuthorizationServiceCollectionExtensions
                 policy.RequireRole(Roles.Admin));
 
             options.AddPolicy(Policies.CanManageAppointments, policy =>
-                policy.RequireRole(Roles.Admin, Roles.Artist, Roles.Manager));
+                policy.RequireRole(Roles.Admin, Roles.Manager));
 
             options.AddPolicy(Policies.Artist, policy =>
-                policy.RequireRole(Roles.Artist));
+                policy.RequireRole(Roles.Artist, Roles.Manager));
 
             options.AddPolicy(Policies.User, policy =>
                 policy.RequireRole(Roles.VipUser, Roles.User));

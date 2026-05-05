@@ -1,13 +1,14 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.Notifications.Queries.GetNotifications;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize]
 public class NotificationsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -22,11 +23,6 @@ public class NotificationsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetMyAll()
     {
-        if (_identity.UserId == 0)
-        {
-            return Unauthorized("Nie można zidentyfikować użytkownika.");
-        }
-
         return Ok(await _mediator.Send(new GetNotificationsQuery { UserId = _identity.UserId }));
     }
 }

@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class AppointmentRepository(AppDbContext context) : IAppointmentRepository
+    public class AppointmentRepository : BaseRepository<Appointment>, IAppointmentRepository
     {
-        private readonly AppDbContext _context = context;
+        public AppointmentRepository(AppDbContext context) : base(context) { }
 
         public async Task AddAppointment(Appointment appointment)
         {
@@ -31,13 +31,13 @@ namespace Infrastructure.Repositories
 
         public async Task<Appointment?> GetAppointmentAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _context.Appointments
+            return await _context.Appointments.Where(a => a.Id == id)
                 .Include(x => x.Customer)
                 .Include(x => x.Artist)
                 .Include(x => x.Service)
                 .Include(x => x.Variant)
                 .Include(x => x.Addons)
-                .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<(List<Appointment> Appointments, int TotalCount)> GetAppointmentsAsync(AppointmentFilter filters, CancellationToken cancellationToken = default)
@@ -54,7 +54,7 @@ namespace Infrastructure.Repositories
                 query = query.Where(x => x.ArtistId == null);
 
             if (filters.Status != null)
-                query = query.Where(x => x.Status.GetType() == filters.Status.GetType());
+                query = query.Where(x => x.Status == filters.Status);
 
             if (filters.From.HasValue) query = query.Where(x => x.From >= filters.From);
 

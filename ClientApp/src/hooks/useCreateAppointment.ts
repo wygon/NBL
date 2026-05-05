@@ -1,7 +1,7 @@
 // hooks/useCreateAppointment.ts
 import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '../api/apiClient';
 import { API_CONFIG } from '../api.config';
+import { apiClient } from '../api/apiClient';
 
 export const useCreateAppointment = (onSuccessCallback: (data: any) => void) => {
   return useMutation({

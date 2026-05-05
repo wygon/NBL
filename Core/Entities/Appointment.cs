@@ -191,5 +191,21 @@ namespace Domain.Entities
         {
             Status = newStatus;
         }
+
+        public void ForceEditDetails(AppointmentStatus? status, DateTime? from, DateTime? to, NailSize? nailSize, string? aunotes, string? aanotes,
+            int? artistId, int? customerId, int? serviceId, int? variantId)
+        {
+            //RequestedDates= "";
+            if (status is not null) Status = status;
+            From = from;
+            To = to;
+            if (nailSize is not null) NailSize = nailSize;
+            if (aunotes is not null) AdditionalNotesUser = aunotes;
+            if (aanotes is not null) AdditionalNotesArtist = aanotes;
+            ArtistId = artistId;
+            if (customerId.HasValue) CustomerId = customerId.Value;
+            if (serviceId.HasValue) ServiceId = serviceId.Value;
+            if (variantId.HasValue) VariantId = variantId.Value;
+        }
     }
 }

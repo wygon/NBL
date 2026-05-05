@@ -1,12 +1,13 @@
-﻿
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Features.Appointments;
 using Application.Features.Appointments.Commands.AddAppointmentPhoto;
 using Application.Features.Appointments.Commands.CancelConfirmedAppointment;
+using Application.Features.Appointments.Commands.ChangeAppointmentArtist;
 using Application.Features.Appointments.Commands.ConfirmAppointment;
 using Application.Features.Appointments.Commands.CreateAppointment;
 using Application.Features.Appointments.Commands.CreateConfirmedAppointment;
 using Application.Features.Appointments.Commands.FinishAppointment;
+using Application.Features.Appointments.Commands.TakeAppointment;
 using Application.Features.Appointments.Queries.GetAppointmentBookingData;
 using Application.Features.Appointments.Queries.GetAppointments;
 using Domain.Constants;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AppointmentsController : ControllerBase
@@ -29,9 +31,14 @@ namespace Web.Api.Controllers
             _identity = currentUser;
         }
 
-        #region Client
+        #region Public and Basic Client
+        [AllowAnonymous]
+        [HttpGet("booking-data")]
+        public async Task<ActionResult<BookingDataDto>> GetBookingDataAsync()
+        {
+            return Ok(await _mediator.Send(new GetAppointmentBookingDataQuery()));
+        }
 
-        [Authorize(Policy = Policies.User)]
         [HttpGet("my")]
         public async Task<ActionResult<GetAppointmentsDto>> GetMyAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
         {
@@ -41,7 +48,6 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        //[Authorize(Policy = Policies.User)]
         [HttpPost]
         public async Task<IActionResult> RequestAppointmentAsync([FromBody] CreateAppointmentCommand command)
         {
@@ -50,7 +56,6 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        [Authorize]
         [HttpDelete("cancel/{id}")]
         public async Task<IActionResult> CancelAppointmentAsync([FromRoute] int id)
         {
@@ -61,8 +66,8 @@ namespace Web.Api.Controllers
 
         #endregion
 
-        #region Artist
-        //[Authorize(Policy = Policies.Artist)]
+        #region Artist and Manager
+        [Authorize(Policy = Policies.Artist)]
         [HttpPut("confirm/{id}")]
         public async Task<IActionResult> ConfirmRequestedAppointmentAsync([FromRoute] int id, [FromBody] AppointmentDto request)
         {
@@ -90,15 +95,6 @@ namespace Web.Api.Controllers
             return NoContent(); // 204 No Content - standard dla operacji PUT
         }
 
-        [Authorize(Policy = Policies.CanManageAppointments)]
-        [HttpPost("confirmed")]
-        public async Task<IActionResult> CreateConfirmedAsync([FromBody] CreateConfirmedAppointmentCommand command)
-        {
-            CreateConfirmedAppointmentDto dto = await _mediator.Send(command);
-
-            return Ok(dto);
-        }
-
         [Authorize(Policy = Policies.Artist)]
         [HttpGet("requested")]
         public async Task<ActionResult<GetAppointmentsDto>> ArtistGetRequestedAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
@@ -110,14 +106,7 @@ namespace Web.Api.Controllers
             return Ok(dto);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
-        {
-            GetAppointmentsDto dto = await _mediator.Send(query);
-
-            return Ok(dto);
-        }
-
+        [Authorize(Policy = Policies.Artist)]
         [HttpPut("{id}/finish")]
         public async Task<ActionResult> FinishAppointmentAsync([FromRoute] int id)
         {
@@ -131,16 +120,50 @@ namespace Web.Api.Controllers
             return NoContent(); // Dla PUT zazwyczaj zwraca się 204 NoContent, ale Ok() (200) też jest w porządku
         }
 
+        [Authorize(Policy = Policies.Artist)]
+        [HttpPut("{id}/take")]
+        public async Task<IActionResult> TakeAppointment([FromRoute] int id)
+        {
+            TakeAppointmentCommand command = new TakeAppointmentCommand
+            {
+                AppointmentId = id
+            };
+
+            await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(TakeAppointment), new { id = command.AppointmentId }, null);
+        }
+
         #endregion
 
-        //[Authorize(Policy = Policies.AdminOnly)]
-        //[HttpGet]
-        //public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
-        //{
-        //    GetAppointmentsDto dto = await _mediator.Send(query);
+        #region Manager / Admin
 
-        //    return Ok(dto);
-        //}
+        [Authorize(Policy = Policies.CanManageAppointments)]
+        [HttpPost("confirmed")]
+        public async Task<IActionResult> CreateConfirmedAsync([FromBody] CreateConfirmedAppointmentCommand command)
+        {
+            CreateConfirmedAppointmentDto dto = await _mediator.Send(command);
+
+            return Ok(dto);
+        }
+
+        [Authorize(Policy = Policies.CanManageAppointments)]
+        [HttpPut("artist")]
+        public async Task<IActionResult> ChangeArtist([FromBody] ChangeAppointmentArtistCommand command)
+        {
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        //[Authorize(Policy = Policies.CanManageAppointments)]
+        [HttpGet]
+        public async Task<ActionResult<GetAppointmentsDto>> GetAppointmentsAsync([FromQuery] GetAppointmentsQuery query)
+        {
+            return Ok(await _mediator.Send(query));
+        }
+
+        #endregion
 
         [HttpPost("{id}/photos")]
         public async Task<ActionResult<List<AddAppointmentPhotoDto>>> AddAppointmentPhotoAsync([FromRoute] int id, [FromForm] AddAppointmentPhotoCommand command)
@@ -150,12 +173,6 @@ namespace Web.Api.Controllers
 
             List<AddAppointmentPhotoDto> dto = await _mediator.Send(command);
             return Ok(dto);
-        }
-
-        [HttpGet("booking-data")]
-        public async Task<ActionResult<BookingDataDto>> GetBookingDataAsync()
-        {
-            return Ok(await _mediator.Send(new GetAppointmentBookingDataQuery()));
         }
     }
 }

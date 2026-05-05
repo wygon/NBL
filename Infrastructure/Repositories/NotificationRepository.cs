@@ -11,10 +11,8 @@ namespace Infrastructure.Repositories
 
         public async Task<List<Notification>> GetUserNotificationsAsync(int userId, CancellationToken cancellationToken)
         {
-            //return await _context.Notifications
-            //    .Where(n => n.UserId == userId)
-            //    .ToListAsync(cancellationToken);
             return await _context.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
                 .OrderByDescending(n => n.CreatedDate)
                 .ToListAsync(cancellationToken);
         }
