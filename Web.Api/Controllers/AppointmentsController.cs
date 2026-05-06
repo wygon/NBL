@@ -51,6 +51,7 @@ namespace Web.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> RequestAppointmentAsync([FromBody] CreateAppointmentCommand command)
         {
+            command.UserId = _identity.UserId;
             CreateAppointmentDto dto = await _mediator.Send(command);
 
             return Ok(dto);

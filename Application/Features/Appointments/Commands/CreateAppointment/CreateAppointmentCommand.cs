@@ -4,10 +4,10 @@ using MediatR;
 
 namespace Application.Features.Appointments.Commands.CreateAppointment
 {
-    public record CreateAppointmentCommand : IRequest<CreateAppointmentDto>
+    public class CreateAppointmentCommand : IRequest<CreateAppointmentDto>
     {
         public int? RequestedArtistId { get; init; }
-        public required int UserId { get; init; }
+        public required int UserId { get; set; }
         public required List<DateTimeFromTo> RequestedDates { get; init; }
         public int ServiceId { get; init; }
         public NailSize? NailSize { get; init; }

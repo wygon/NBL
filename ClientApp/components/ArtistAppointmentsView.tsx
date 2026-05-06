@@ -30,7 +30,7 @@ export default function ArtistAppointmentsView() {
 
   const { data: artists } = useArtists();
 
-const queryFilters = {
+  const queryFilters = {
     artistId: (filterMode === 'mine' || filterMode === 'all') ? artistId : null,
     nullArtist: (filterMode === 'unassigned' || filterMode === 'all') ? true : false,
     page: 1,
